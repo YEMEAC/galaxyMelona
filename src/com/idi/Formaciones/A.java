@@ -36,15 +36,9 @@ public class A extends Formacion {
 			saltos = 0;
 		}
 
-		for (int i = 0; i < enemigos.size(); ++i) {
-			int esAtacante = 0;
-			for (int j = 0; j < atacantes.size() && esAtacante == 0; ++j)
-				if (enemigos.get(i).equals(atacantes.get(j)))
-					esAtacante = 1;
-
-			if (esAtacante == 0)
+		for (int i = 0; i < enemigos.size(); ++i) 
 				enemigos.get(i).setX(enemigos.get(i).getX() + desplazamiento);
-		}
+
 		++saltos;
 	}
 
@@ -77,8 +71,11 @@ public class A extends Formacion {
 			int min = 0;
 			int max = enemigos.size() - 1;
 			Random r = new Random();
-			for (int i = 0; i < 3; ++i)
+			for (int i = 0; i < 3 && !enemigos.isEmpty(); ++i)
 				atacantes.add(enemigos.get(r.nextInt(max - min + 1) + min));
+			//quito los atacantes de la formacion normal para que no le afecte el desplazamiento general
+			for (int i = 0; i < atacantes.size(); ++i)
+				enemigos.remove(atacantes.get(i));
 		}
 	}
 

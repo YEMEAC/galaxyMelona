@@ -6,8 +6,9 @@
 
 package com.idi.Entity;
 
-import java.util.List;
-
+import android.content.res.AssetManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Rect;
 
@@ -17,9 +18,15 @@ import android.graphics.Rect;
  */
 public class Jugador extends Nave {
 
-	public Jugador(int x, int y, int vidas, int velocidad) {
+	Sprite sprite; 
+	
+	public Jugador(int x, int y, int vidas, int velocidad, AssetManager asset) {
 		super(x, y, vidas, velocidad);
 		color = Color.WHITE;
+		//Bitmap bMap = BitmapFactory.decodeFile("bitmap/ship.png");
+		sprite = new Sprite(
+				BitmapManager.getInstance().loadBitmap("bitmap/ship.png",asset)
+				, new Rect(49, 140, 49+21, 140+27), 3);
 	}
 
 	public void move(int xx, int yy, int w, int h) {
@@ -61,6 +68,16 @@ public class Jugador extends Nave {
 	public Rect getRectangle() {
 		return new Rect(x, y, x + Constantes.TAMANO_LADO_NAVE_JUGADOR, y
 				+ Constantes.TAMANO_LADO_NAVE_JUGADOR);
+	}
+
+	public void tocado() {
+		this.vidas-=1;
+		
+	}
+	
+
+	public Sprite getSprite() {
+		return sprite;
 	}
 
 }

@@ -15,10 +15,6 @@ public class Colision {
 	Date duracion;
 	int color;
 
-	public Colision() {
-
-	}
-
 	public Colision(int a, int b) {
 		x = a;
 		y = b;

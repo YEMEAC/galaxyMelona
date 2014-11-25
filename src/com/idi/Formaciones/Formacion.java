@@ -17,11 +17,10 @@ public abstract class  Formacion {
 	protected int desplazamiento = Constantes.LOGINTUD_SALTO_BLOQUE_ENEMIGO;
 	protected ArrayList<Enemigo> enemigos = new ArrayList<Enemigo>();
 	protected ArrayList<Enemigo> atacantes = new ArrayList<Enemigo>();
-	
 	Jugador jugador;
 	
-	public Formacion(Jugador jugador2){
-		jugador=jugador2;
+	public Formacion(Jugador jugador){
+		this.jugador=jugador;
 		ultimoMovimientoBloque = (Calendar.getInstance()).getTime();
 		ultimoMovimientoAtacantes = (Calendar.getInstance()).getTime();
 	}
@@ -30,12 +29,12 @@ public abstract class  Formacion {
 	public void mover(ArrayList<Disparo> disparosEnemigos) {
 
 		Date actual = (Calendar.getInstance()).getTime();
-		if (actual.getTime() - ultimoMovimientoBloque.getTime() >= 1000) {
+		if (actual.getTime() - ultimoMovimientoBloque.getTime() >= Constantes.DELAY_DESPLAZAMIENTO_MOVIMIENTO_FORMACION) {
 			moverBloque();
 			ultimoMovimientoBloque = (Calendar.getInstance()).getTime();
 		}
 
-		if (actual.getTime() - ultimoMovimientoAtacantes.getTime() >= 900) {
+		if (actual.getTime() - ultimoMovimientoAtacantes.getTime() >= Constantes.DELAY_DESPLAZAMIENTO_MOVIMIENTO_ATACANTES) {
 			moverAtacantes(disparosEnemigos);
 			ultimoMovimientoAtacantes = (Calendar.getInstance()).getTime();
 		}

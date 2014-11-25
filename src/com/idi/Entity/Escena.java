@@ -17,6 +17,8 @@ import com.idi.Formaciones.A;
 import com.idi.Formaciones.Formacion;
 
 import android.content.Context;
+import android.content.res.AssetManager;
+import android.graphics.RectF;
 
 /**
  * 
@@ -32,121 +34,123 @@ public class Escena {
 	ArrayList<Disparo> disparosEnemigos = new ArrayList<Disparo>();
 	ArrayList<Colision> colisiones = new ArrayList<Colision>();
 
-	public Escena(int nivel, Context context) {
+	public Escena(int nivel, Context context, AssetManager asset) {
 		estadistica = new Estadistica(nivel, context);
 
 		jugador = new Jugador(Constantes.POSICION_INICIAL_JUGADOR_X,
 				Constantes.POSICION_INICIAL_JUGADOR_Y,
-				Constantes.VIDAS_JUGADOR, Constantes.VELOCIDA_INICIAL_JUGADOR);
-		
+				Constantes.VIDAS_JUGADOR, Constantes.VELOCIDA_INICIAL_JUGADOR,asset);
+
 		if (nivel == 1)
 			formacion = new A(jugador);
 	}
-	
-	public void colisiones(){
+
+	public void colisiones() {
 		colisionesDisparosJugador();
 		colisionesDisparosEnemigo();
 	}
 
 	public void colisionesDisparosJugador() {
-		List<Enemigo> enemigos = formacion.getEnemigos();
-		ArrayList<Disparo> borrarDisparo = new ArrayList<Disparo>();
-		ArrayList<Enemigo> borrarEnemigo = new ArrayList<Enemigo>();
 
-		for (int i = 0; i < disparosJugador.size(); ++i) {
-			int tocado=0;
-			for (int j = 0; j < enemigos.size() && tocado==0; ++j) {
-				if (enemigos.get(j).getRectangle()
-						.intersect(disparosJugador.get(i).getRectangle())) {
-					
-					tocado=0;
-					System.out.println("colisio");
-					estadistica.addBonus(enemigos.get(j).getBonus());
-					borrarDisparo.add(disparosJugador.get(i));
-					borrarEnemigo.add(enemigos.get(j));
+		Iterator<Enemigo> itEnemigos =formacion.getEnemigos().iterator();
+		Iterator<Disparo> itDisparosJugador = disparosJugador.iterator();
+		Disparo disparo = null;
+		Enemigo enemigo = null;
+		int tocado;
+		while (itDisparosJugador.hasNext()) {
+			tocado = 0;
+			disparo = itDisparosJugador.next();
+			while (itEnemigos.hasNext() && tocado == 0) {
+				enemigo = itEnemigos.next();
+				if (enemigo.getRectangle().intersect(disparo.getRectangle())) {
+					tocado = 1;
+					System.out.println("colision, enemigo muerto -enemigo -disparojugador +colision");
+					estadistica.addBonus(enemigo.getBonus());
+					colisiones.add(new Colision(enemigo.getX(),enemigo.getY()));
+					itDisparosJugador.remove();
+					itEnemigos.remove();
+				}
+			}
+		}
+		//colissiones con atacantes
+		itEnemigos=formacion.getAtacantes().iterator();
+		itDisparosJugador = disparosJugador.iterator();
+		while (itDisparosJugador.hasNext()) {
+			tocado = 0;
+			disparo = itDisparosJugador.next();
+			while (itEnemigos.hasNext() && tocado == 0) {
+				enemigo = itEnemigos.next();
+				if (enemigo.getRectangle().intersect(disparo.getRectangle())) {
+					tocado = 1;
+					System.out.println("colision, atacante muerto -enemigo -disparojugador +colision");
+					estadistica.addBonus(enemigo.getBonus());
+					colisiones.add(new Colision(enemigo.getX(),enemigo.getY()));
+					itDisparosJugador.remove();
+					itEnemigos.remove();
 				}
 			}
 		}
 
-		//avanzar colisiones antiguas, detectar colisiones en 3 estado
-		ArrayList<Colision> borrarColision = new ArrayList<Colision>();
-		for (int i=0; i < colisiones.size() ; ++i) {
+		// avanzar colisiones antiguas, detectar colisiones en 3 estado
+		Iterator<Colision> itColisiones = colisiones.iterator();
+		Colision colision = null;
+		while (itColisiones.hasNext()) {
+			colision = itColisiones.next();
 			System.out.println("colision avanza");
-			int aux=colisiones.get(i).avanzarColision();
-			if(aux==1)
-				borrarColision.add(colisiones.get(i));
-		}
-		//destruir colisiones en teceres estado
-		for (int i =0; i < borrarColision.size() ; ++i) {
-			colisiones.remove(borrarColision.get(i));
-		}
-
-		//enemigos y disparosJugador a borrar valensiempre igual 1 a 1
-		for (int i = 0; i < borrarEnemigo.size(); ++i) {
-			System.out.println("colision: borro enemigo/atacante + disparo+ añado colision");
-			disparosJugador.remove(borrarDisparo.get(i));
-			enemigos.remove(borrarEnemigo.get(i));
-			formacion.getAtacantes().remove(borrarEnemigo.get(i));
-
-			// pongo una colision donde estaba la nave enemiga
-			colisiones.add(new Colision(borrarEnemigo.get(i).x, borrarEnemigo.get(i).y));
+			int aux = colision.avanzarColision();
+			if (aux == 1)
+				itColisiones.remove();
 		}
 	}
-	
-	public void colisionesDisparosEnemigo (){
-		int tocado=0;
-		Disparo d=null;
-		for (int i = 0; i < disparosEnemigos.size() && tocado==0; ++i)
-			if (jugador.getRectangle().intersect(disparosEnemigos.get(i).getRectangle())) {
+
+	public void colisionesDisparosEnemigo() {
+		int tocado = 0;
+		Iterator<Disparo> it = disparosEnemigos.iterator();
+		Disparo disparo = null;
+		while (it.hasNext() && tocado == 0) {
+			disparo = it.next();
+			if (jugador.getRectangle().intersect(disparo.getRectangle())) {
 				System.out.println("ME HAN DADO!");
-				tocado=0;
-				d=disparosEnemigos.get(i);
-			}	
-		if(d!=null)
-			disparosEnemigos.remove(d);
+				jugador.tocado();
+				tocado = 1;
+				it.remove();
+			}
+		}
 	}
-	
+
 	public void avanzarDisparos() {
 		avanzarDisparosJugador();
 		avanzarDisparosEnemigos();
 	}
+
 	public void moverFormacion() {
 		formacion.mover(disparosEnemigos);
 	}
 
 	public void avanzarDisparosJugador() {
-		for (int i = 0; i < disparosJugador.size(); ++i) 
+		for (int i = 0; i < disparosJugador.size(); ++i)
 			disparosJugador.get(i).moveDisparoJugador();
 
-		if (disparosJugador.size() > 0
-				&& (disparosJugador.get(0).getY() < 0 || disparosJugador.get(0).getY() > 480)) {
-			System.out.println("hay que borrar el disparo mas antiguo ");
-			disparosJugador.remove(0);
+		Iterator<Disparo> it = disparosJugador.iterator();
+		Disparo disparo = null;
+		while (it.hasNext()) {
+			disparo = it.next();
+			if (disparo.getY() < 0 || disparo.getY() > 480)
+				it.remove();
 		}
 	}
-	
+
 	public void avanzarDisparosEnemigos() {
-		for (int i = 0; i < disparosEnemigos.size(); ++i) 
+		for (int i = 0; i < disparosEnemigos.size(); ++i)
 			disparosEnemigos.get(i).moveDisparoEnemigo();
-		
-		
+
 		Iterator<Disparo> it = disparosEnemigos.iterator();
 		Disparo disparo = null;
-	      while(it.hasNext()) {
-	    	   disparo=it.next();
-	    	  if (disparo.getY() < 0 || disparo.getY() > 480)
-					it.remove();
-	      }
-		
-		/*ArrayList<Disparo> disparosEnemigosBorrar = new ArrayList<Disparo>();
-		for (int i = 0; i < disparosEnemigos.size(); ++i) 
-			if (disparosEnemigos.size() > 0 && (disparosEnemigos.get(0).getY() < 0 || disparosEnemigos.get(0).getY() > 480))
-				disparosEnemigosBorrar.add(disparosEnemigos.get(i));
-				
-		for (int i = 0; i < disparosEnemigosBorrar.size(); ++i) 	{
-			System.out.println("hay que borrar un disparo enemigo ");
-			disparosEnemigos.remove(disparosEnemigosBorrar.get(i));
-		}*/
+		while (it.hasNext()) {
+			disparo = it.next();
+			if (disparo.getY() < 0 || disparo.getY() > 480)
+				it.remove();
+		}
 	}
 
 	public Jugador getJugador() {
@@ -192,4 +196,5 @@ public class Escena {
 	public void setColisiones(ArrayList<Colision> colisiones) {
 		this.colisiones = colisiones;
 	}
+
 }

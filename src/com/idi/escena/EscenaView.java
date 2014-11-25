@@ -11,6 +11,7 @@ import com.idi.Thread.ThreadDisparo;
 import com.idi.Thread.ThreadEscenaView;
 
 import android.content.Context;
+import android.content.res.AssetManager;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -32,10 +33,14 @@ public class EscenaView extends SurfaceView implements SurfaceHolder.Callback {
 	private int arrastro = 0;
 	private int click = 0;
 
-	public EscenaView(Context context) {
+	private AssetManager asset;
+
+	public EscenaView(Context context, AssetManager asset) {
 		super(context);
 		getHolder().addCallback(this);
-		escena = new Escena(1, context);
+		this.asset=asset;
+		escena = new Escena(1, context,asset);
+		
 	}
 
 	@Override
@@ -138,19 +143,25 @@ public class EscenaView extends SurfaceView implements SurfaceHolder.Callback {
 	}
 
 	private void pingaEnemigos(Paint paint, Canvas canvas) {
-		paint.setColor(Color.RED);
+	
 		Formacion formacion = escena.getFormacion();
 		for (int i = 0; i < formacion.getEnemigos().size(); ++i) {
 			Enemigo enemigo = formacion.getEnemigos().get(i);
-			paint.setColor(enemigo.getColor()); // por ahora los engmiso tienen
-												// elmismo color esto sobraria
+			paint.setColor(enemigo.getColor()); 
 			canvas.drawRect(enemigo.getRectangle(), paint);
+		}
+		
+		for (int i = 0; i < formacion.getAtacantes().size(); ++i) {
+			Enemigo atacante = formacion.getAtacantes().get(i);
+			paint.setColor(atacante.getColor()); 
+			canvas.drawRect(atacante.getRectangle(), paint);
 		}
 	}
 
 	private void pintaJugador(Paint paint, Canvas canvas) {
 		paint.setColor(Color.BLACK);
-		canvas.drawRect(escena.getJugador().getRectangle(), paint);
+		
+		canvas.drawBitmap(escena.getJugador().getSprite().getSprite(),5,5, paint);
 	}
 
 	private void pintaDisparos(Paint paint, Canvas canvas) {
@@ -195,5 +206,10 @@ public class EscenaView extends SurfaceView implements SurfaceHolder.Callback {
 
 	public void setOrigenY(int origenY) {
 		this.origenY = origenY;
+	}
+
+	public void setAsset(AssetManager assetManager) {
+		this.asset=assetManager;
+		
 	}
 }
