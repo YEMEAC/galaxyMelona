@@ -12,7 +12,6 @@ import android.widget.RelativeLayout;
 public class EscenaActivity extends Activity {
 	EscenaView escena;
 	AssetManager assetManager;
-	
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {

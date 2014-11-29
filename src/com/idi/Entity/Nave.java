@@ -6,8 +6,11 @@
 
 package com.idi.Entity;
 
+import android.content.res.AssetManager;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Rect;
+import android.graphics.RectF;
 
 /**
  *
@@ -15,27 +18,21 @@ import android.graphics.Rect;
  */
 public abstract class Nave {
     
-	protected int x;
-    protected int y;
+    protected float  x;
+    protected float y;
     protected int vidas;
     protected int velocidad;
     protected int color = Color.BLACK;
+    protected Bitmap imagen;
     //RectF dimension = new RectF();
     
     //enemigas basicas
-    public Nave(int x, int y, int v){
+    public Nave(float x, float y, int v, Bitmap imagen){
         velocidad=1;
         vidas=v;
         this.x=x;
         this.y=y;
-    }
-    
-    //jugador
-    public Nave (int x, int y, int vidas, int velocidad){
-        this.vidas=vidas;
-        this.velocidad=velocidad;
-        this.x=x;
-        this.y=y;
+        this.imagen=imagen;
     }
     
     public int getVidas() {
@@ -72,24 +69,32 @@ public abstract class Nave {
 	}
 	
 
-	public int getX() {
+	public float getX() {
 		return x;
 	}
 
-	public void setX(int x) {
+	public void setX(float x) {
 		this.x = x;
 	}
 
-	public int getY() {
+	public float getY() {
 		return y;
 	}
 
-	public void setY(int y) {
+	public void setY(float y) {
 		this.y = y;
 	}
 
-	public abstract void avanzar();
+    public Bitmap getImagen() {
+        return imagen;
+    }
+
+    public void setImagen(Bitmap imagen) {
+        this.imagen = imagen;
+    }
+    
+    public abstract void avanzar();
     public abstract void retroceder();
     //public abstract Disparo dispara();
-    public abstract Rect getRectangle();
+    public abstract RectF getRectangle();
 }

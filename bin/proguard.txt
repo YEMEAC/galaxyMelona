@@ -1,0 +1,6 @@
+# view AndroidManifest.xml #generated:27
+-keep class com.idi.galaxiamelona.EscenaActivity { <init>(...); }
+
+# view AndroidManifest.xml #generated:17
+-keep class com.idi.galaxiamelona.MenuActivity { <init>(...); }
+

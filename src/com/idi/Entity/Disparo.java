@@ -3,71 +3,76 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package com.idi.Entity;
 
-import java.util.List;
+import android.graphics.Bitmap;
 import android.graphics.Rect;
+import android.graphics.RectF;
+import java.util.List;
+
 /**
  *
  * @author ymeloa
  */
-public class Disparo {
-	
+public abstract class Disparo {
+
     double velocidad;
-    int x;
-    int y;
-    
-    public Disparo(){
-        x=y=0;
-    }
-    
-    public Disparo(int x, int y) {
-      this.x=x;
-      this.y=y;
-    }
-    
-    public void moveDisparoJugador(){
-        this.y-=Constantes.VELOCIDAD_DISPARO_JUGADOR;
-    } 
-    
-    public void moveDisparoEnemigo(){
-        this.y+=Constantes.VELOCIDAD_DISPARO_ENEMIGO;
+    float x;
+    float y;
+    protected Bitmap imagen;
+
+    public Disparo() {
+        x = y = 0;
     }
 
-	public double getVelocidad() {
-		return velocidad;
-	}
+    public Disparo(float x, float y, Bitmap imagen) {
+        this.x = x;
+        this.y = y;
+        this.imagen=imagen;
+    }
 
-	public void setVelocidad(double velocidad) {
-		this.velocidad = velocidad;
-	}
+    public void moveDisparoJugador() {
+        this.y -= Constantes.VELOCIDAD_DISPARO_JUGADOR;
+    }
 
+    public void moveDisparoEnemigo() {
+        this.y += Constantes.VELOCIDAD_DISPARO_ENEMIGO;
+    }
 
-	/*public List<Enemigo> getEnemigos() {
-		return enemigos;
-	}
+    public double getVelocidad() {
+        return velocidad;
+    }
 
-	public void setEnemigos(List<Enemigo> enemigos) {
-		this.enemigos = enemigos;
-	}*/
+    public void setVelocidad(double velocidad) {
+        this.velocidad = velocidad;
+    }
 
-	public int getX() {
-		return x;
-	}
+    public float getX() {
+        return x;
+    }
 
-	public void setX(int x) {
-		this.x = x;
-	}
+    public void setX(float x) {
+        this.x = x;
+    }
 
-	public int getY() {
-		return y;
-	}
+    public float getY() {
+        return y;
+    }
 
-	public void setY(int y) {
-		this.y = y;
-	}
-	public Rect getRectangle() {
-		return new Rect(x, y, x + Constantes.TAMANO_LADO_NAVE_ENEMIGO, y + Constantes.TAMANO_LADO_NAVE_ENEMIGO);
-	} 
+    public void setY(float y) {
+        this.y = y;
+    }
+
+    public RectF getRectangle() {
+        return new RectF(x, y, x + Constantes.TAMANO_LADO_NAVE_ENEMIGO, y + Constantes.TAMANO_LADO_NAVE_ENEMIGO);
+    }
+
+    public Bitmap getImagen() {
+        return imagen;
+    }
+
+    public void setImagen(Bitmap imagen) {
+        this.imagen = imagen;
+    }
+
 }
