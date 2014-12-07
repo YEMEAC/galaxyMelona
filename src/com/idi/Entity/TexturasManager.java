@@ -19,8 +19,7 @@ import java.util.HashMap;
  */
 public class TexturasManager {
 
-    private static TexturasManager bitmapManager;
-    private static HashMap<String, Bitmap> texturas = new HashMap<String, Bitmap>();
+    private static HashMap<String, Bitmap> texturas;
 
     private static ArrayList<Bitmap> AnimacionColision1; //así no tengo que cargar la animacion en cad colision OPTIMIZACION
     private static ArrayList<Bitmap> AnimacionColision2;
@@ -28,19 +27,51 @@ public class TexturasManager {
 
     public TexturasManager(AssetManager a) {
         am = a;
+        texturas = new HashMap<String, Bitmap>();
         Bitmap aux;
 
-        aux = getBitmapScalado(Constantes.PATH_SPRITE_NAVES_DISPAROS, new Rect(49, 140, 49 + 21, 140 + 27), 1);
-        anadirTextura(Constantes.TEXTURAS_TEXTURA_JUGADOR, aux);
-
-        aux = getBitmapScalado(Constantes.PATH_SPRITE_NAVES_DISPAROS, new Rect(52, 203, 52 + 15, 203 + 19), 1);
-        anadirTextura(Constantes.TEXTURAS_TEXTURA_ENEMIGO_CABO, aux);
-
-        aux = getBitmapScalado(Constantes.PATH_SPRITE_NAVES_DISPAROS, new Rect(217, 113, 217 + 11, 113 + 11), 1);
+        aux = getBitmapScalado(Constantes.PATH_SPRITE_NAVE_JUGADOR, new Rect(0, 0, 60, 63), 1);
+        anadirTextura(Constantes.TEXTURAS_TEXTURA_JUGADOR, aux);     
+        aux = getBitmapScalado(Constantes.PATH_SPRITE_DISPARO_JUGADOR, new Rect(0, 0, 11, 29),1);
         anadirTextura(Constantes.TEXTURAS_TEXTURA_DISPAROJUGADOR, aux);
-
-        aux = getBitmapScalado(Constantes.PATH_SPRITE_NAVES_DISPAROS, new Rect(217, 113, 217 + 11, 113 + 11), 1);
-        anadirTextura(Constantes.TEXTURAS_TEXTURA_DISPAROENEMIGO, aux);
+         aux = getBitmapScalado(Constantes.PATH_SPRITE_JUGADOR_VIDAS, new Rect(0, 0, 25, 26),1);
+        anadirTextura(Constantes.TEXTURAS_TEXTURA_JUGADOR_VIDAS, aux);
+        
+        
+        //CABO
+        aux = getBitmapScalado(Constantes.PATH_SPRITE_NAVE_CABO_1, new Rect(0, 0, 48, 37), 1);
+        anadirTextura(Constantes.TEXTURAS_TEXTURA_ENEMIGO_CABO_1, aux);
+        aux = getBitmapScalado(Constantes.PATH_SPRITE_NAVE_CABO_2, new Rect(0, 0, 48, 37), 1);
+        anadirTextura(Constantes.TEXTURAS_TEXTURA_ENEMIGO_CABO_2, aux);
+        aux = getBitmapScalado(Constantes.PATH_SPRITE_DISPARO_CABO, new Rect(0, 0, 3, 29), 1);
+        anadirTextura(Constantes.TEXTURAS_TEXTURA_DISPARO_ENEMIGO_CABO, aux);
+        
+        //SARGENTO
+        aux = getBitmapScalado(Constantes.PATH_SPRITE_NAVE_SARGENTO_1, new Rect(0, 0, 48, 37), 1);
+        anadirTextura(Constantes.TEXTURAS_TEXTURA_ENEMIGO_SARGENTO_1, aux);
+        aux = getBitmapScalado(Constantes.PATH_SPRITE_NAVE_SARGENTO_2, new Rect(0, 0, 48, 37), 1);
+        anadirTextura(Constantes.TEXTURAS_TEXTURA_ENEMIGO_SARGENTO_2, aux);
+        aux = getBitmapScalado(Constantes.PATH_SPRITE_DISPARO_SARGENTO, new Rect(0, 0, 3, 29), 1);
+        anadirTextura(Constantes.TEXTURAS_TEXTURA_DISPARO_ENEMIGO_SARGENTO, aux);
+        
+        
+        //CORONEL
+        aux = getBitmapScalado(Constantes.PATH_SPRITE_NAVE_CORONEL_1, new Rect(0, 0, 48, 37), 1);
+        anadirTextura(Constantes.TEXTURAS_TEXTURA_ENEMIGO_CORONEL_1, aux);
+        aux = getBitmapScalado(Constantes.PATH_SPRITE_NAVE_CORONEL_2, new Rect(0, 0, 48, 37), 1);
+        anadirTextura(Constantes.TEXTURAS_TEXTURA_ENEMIGO_CORONEL_2, aux);
+        aux = getBitmapScalado(Constantes.PATH_SPRITE_DISPARO_CORONEL, new Rect(0, 0, 3, 29), 1);
+        anadirTextura(Constantes.TEXTURAS_TEXTURA_DISPARO_ENEMIGO_CORONEL, aux);
+        
+        
+        //TENIENTE
+        aux = getBitmapScalado(Constantes.PATH_SPRITE_NAVE_TENIENTE_1, new Rect(0, 0, 48, 37), 1);
+        anadirTextura(Constantes.TEXTURAS_TEXTURA_ENEMIGO_TENIENTE_1, aux);
+        aux = getBitmapScalado(Constantes.PATH_SPRITE_NAVE_TENIENTE_2, new Rect(0, 0, 48, 37), 1);
+        anadirTextura(Constantes.TEXTURAS_TEXTURA_ENEMIGO_TENIENTE_2, aux);
+        aux = getBitmapScalado(Constantes.PATH_SPRITE_DISPARO_TENIENTE, new Rect(0, 0, 3, 29), 1);
+        anadirTextura(Constantes.TEXTURAS_TEXTURA_DISPARO_ENEMIGO_TENIENTE, aux);
+        
 
         AnimacionColision1 = crearAnimacionExplocionEnemigo(Constantes.PATH_ANIMACION_EXPLOCION_ENEMIO_1);
         AnimacionColision2 = crearAnimacionExplocionEnemigo(Constantes.PATH_ANIMACION_EXPLOCION_ENEMIO_2);
@@ -55,7 +86,7 @@ public class TexturasManager {
         am = a;
     }
 
-    void anadirTextura(String jugador, Bitmap bitmap) {
+    static void anadirTextura(String jugador, Bitmap bitmap) {
         texturas.put(jugador, bitmap);
     }
 
@@ -87,7 +118,7 @@ public class TexturasManager {
     public static ArrayList<Bitmap> crearAnimacionExplocionEnemigo(String path) {
         ArrayList<Bitmap> movie = new ArrayList<Bitmap>();
         try {
-            int scale = 2;
+            int scale = 1;
 
             InputStream is = am.open(path);
             int witdh = 64;

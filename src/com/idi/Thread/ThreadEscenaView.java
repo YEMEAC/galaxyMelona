@@ -1,57 +1,121 @@
+/**
+ *
+ */
 package com.idi.Thread;
 
-import android.content.Context;
-import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.graphics.Rect;
+import android.util.Log;
 import android.view.SurfaceHolder;
-import com.idi.Entity.TexturasManager;
 import com.idi.Entity.Constantes;
+import com.idi.Entity.TexturasManager;
 import com.idi.escena.EscenaView;
 
+/**
+ * @author impaler
+ *
+ * The Main thread which contains the game loop. The thread must have access to
+ * the surface view and holder to trigger events every game tick.
+ */
 public class ThreadEscenaView extends Thread {
 
-	private SurfaceHolder sh;
-	private EscenaView view;
-	private boolean run;
-        private AssetManager asset;
+    private static final String TAG = ThreadEscenaView.class.getSimpleName();
 
-	public ThreadEscenaView(SurfaceHolder sh, EscenaView view) {
-		this.sh = sh;
-		this.view = view;
-		run = false;
-                this.asset=view.getAsset();
-	}
+    // desired fps
+    private final static int MAX_FPS = 48;
+    // maximum number of frames to be skipped
+    private final static int MAX_FRAME_SKIPS = 5;
+    // the frame period
+    private final static int FRAME_PERIOD = 1000 / MAX_FPS;
 
-	public void setRunning(boolean run) {
-		this.run = run;
-	}
+    // Surface holder that can access the physical surface
+    private SurfaceHolder surfaceHolder;
+    // The actual view that handles inputs
+    // and draws to the surface
+    private EscenaView gamePanel;
 
-	@Override
-	public void run() {
-		Canvas canvas;
-                Paint paint = new Paint();
-                paint.setStyle(Paint.Style.FILL);
-               
-               Bitmap a = TexturasManager.loadBitmap(Constantes.PATH_FONDO);
-		  
-		while (run) {
-			canvas = null;
-			try {
-				canvas = sh.lockCanvas(null);
-                                canvas.drawBitmap(a, 0, 0, paint);	
-				synchronized (sh) {
-					view.getEscena().avanzarDisparos();
-					view.getEscena().colisiones();
-					view.getEscena().moverFormacion();
-					view.draw(canvas);
-				}
-			} finally {
-				if (canvas != null)
-					sh.unlockCanvasAndPost(canvas);
-			}
-		}
-	}
+    // flag to hold game state 
+    private boolean running;
+
+    public void setRunning(boolean running) {
+        this.running = running;
+    }
+
+    public ThreadEscenaView(SurfaceHolder surfaceHolder, EscenaView gamePanel) {
+        super();
+        this.surfaceHolder = surfaceHolder;
+        this.gamePanel = gamePanel;
+    }
+
+    @Override
+    public void run() {
+        Canvas canvas;
+        Log.d(TAG, "Starting game loop");
+
+        long beginTime;		// the time when the cycle begun
+        long timeDiff;		// the time it took for the cycle to execute
+        int sleepTime;		// ms to sleep (<0 if we're behind)
+        int framesSkipped;	// number of frames being skipped 
+
+        sleepTime = 0;
+
+        Paint paint = new Paint();
+        paint.setStyle(Paint.Style.FILL);
+        Bitmap a = TexturasManager.loadBitmap(Constantes.PATH_FONDO);
+        int velocidadScrollFondo = 20;
+        int yScrollFondo = 0;
+        while (running) {
+            canvas = null;
+			// try locking the canvas for exclusive pixel editing
+            // in the surface
+
+            try {
+                canvas = this.surfaceHolder.lockCanvas();
+                canvas.drawBitmap(a, 0, yScrollFondo, paint);
+                //yScrollFondo -= velocidadScrollFondo;
+                if (yScrollFondo <= -Constantes.LARGO_PANTALLA) {
+                    yScrollFondo = 0;
+                }
+
+                synchronized (surfaceHolder) {
+                    beginTime = System.currentTimeMillis();
+                    framesSkipped = 0;	// resetting the frames skipped
+                    // update game state 
+                    this.gamePanel.update();
+                    // render state to the screen
+                    // draws the canvas on the panel
+                    this.gamePanel.render(canvas);
+                    // calculate how long did the cycle take
+                    timeDiff = System.currentTimeMillis() - beginTime;
+                    // calculate sleep time
+                    sleepTime = (int) (FRAME_PERIOD - timeDiff);
+
+                    if (sleepTime > 0) {
+                        // if sleepTime > 0 we're OK
+                        try {
+                            // send the thread to sleep for a short period
+                            // very useful for battery saving
+                            Thread.sleep(sleepTime);
+                        } catch (InterruptedException e) {
+                        }
+                    }
+
+                    while (sleepTime < 0 && framesSkipped < MAX_FRAME_SKIPS) {
+                        // we need to catch up
+                        this.gamePanel.update(); // update without rendering
+                        sleepTime += FRAME_PERIOD;	// add frame period to check if in next frame
+                        framesSkipped++;
+                    }
+                }
+            } finally {
+                // in case of an exception the surface is not left in 
+                // an inconsistent state
+                if (canvas != null) {
+                    surfaceHolder.unlockCanvasAndPost(canvas);
+                }
+            }	// end finally
+        }
+    }
+
 }

@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package com.idi.Enemigo;
 
 import android.content.res.AssetManager;
@@ -15,56 +14,99 @@ import android.graphics.RectF;
 import com.idi.Entity.Constantes;
 import com.idi.Entity.Disparo;
 import com.idi.Entity.Nave;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+
 /**
- * 
+ *
  * @author ymeloa
  */
 public abstract class Enemigo extends Nave {
 
-	EnemigoTipo tipo;
-	int bonus;
+    EnemigoTipo tipo;
+    int contadorDisparos;
+    long bonus;
+    boolean ultimaImagenUtilizada;
+    //ambas imagenes tiene las mismas dimensiones
+    protected Bitmap imagen1;
+    protected Bitmap imagen2;
 
-	// enemigas basicas
-	public Enemigo(float x, float y, int v, Bitmap imagen) {
-		super(x, y, v,imagen);
-	}
+    // enemigas basicas
+    public Enemigo(float x, float y, int v, Bitmap a, Bitmap b) {
+        super(x, y, v);
+        contadorDisparos = 0;
+        imagen1 = a; 
+        imagen2 = b;
+        ultimaImagenUtilizada = true;
+    }
+    
+     public abstract void movimientoAtacante(float Xjugador, float Yjugador, ArrayList<DisparoEnemigo> disparosEnemigos);
 
-	//@Override
-	public Disparo dispara() {
-		Disparo d = new DisparoEnemigo(x, y + Constantes.VELOCIDAD_DISPARO_ENEMIGO);
-		return d;
-	}
+    //@Override
 
-	@Override
-	public void avanzar() {
-		y += 1 * velocidad;
-	}
+    public Bitmap getImagenAnimacionBloque() {
+        if (ultimaImagenUtilizada) {
+            ultimaImagenUtilizada = false;
+            return imagen1;
+        } else {
+            ultimaImagenUtilizada = true;
+            return imagen2;
+        }
+    }
 
-	@Override
-	public void retroceder() {
-		y -= 1 * velocidad;
-	}
+    @Override
+    public void avanzar() {
+          if(y+velocidad>=Constantes.LARGO_PANTALLA)
+            y=0;
+        else
+          y=y+velocidad; 
+    }
 
-	// por ahora redeifnida solo para jugador enemigo usa la de nave analizar...
-	@Override
-	public RectF getRectangle() {
-		return new RectF(x, y, x + Constantes.TAMANO_LADO_NAVE_ENEMIGO, y + Constantes.TAMANO_LADO_NAVE_ENEMIGO);
-	}
+    @Override
+    public void retroceder() {
+         if(y-velocidad<=0)
+            y=Constantes.LARGO_PANTALLA;
+        else
+          y=y-velocidad; 
+    }
 
-	public EnemigoTipo getTipo() {
-		return tipo;
-	}
+    // por ahora redeifnida solo para jugador enemigo usa la de nave analizar...
+    @Override
+    public RectF getRectangle() {
+       return new RectF(x, y, x + imagen1.getWidth(), y + imagen1.getHeight());
+    }
 
-	public void setTipo(EnemigoTipo tipo) {
-		this.tipo = tipo;
-	}
+    public EnemigoTipo getTipo() {
+        return tipo;
+    }
 
-	public int getBonus() {
-		return bonus;
-	}
+    public void setTipo(EnemigoTipo tipo) {
+        this.tipo = tipo;
+    }
 
-	public void setBonus(int bonus) {
-		this.bonus = bonus;
-	}
+    public long getBonus() {
+        return bonus;
+    }
+
+    public void setBonus(long bonus) {
+        this.bonus = bonus;
+    }
+
+    public Bitmap getImagen1() {
+        return imagen1;
+    }
+
+    public void setImagen1(Bitmap imagen) {
+        this.imagen1 = imagen;
+    }
+
+    public Bitmap getImagen2() {
+        return imagen2;
+    }
+
+    public void setImagen2(Bitmap imagen) {
+        this.imagen2 = imagen;
+    }
 
 }

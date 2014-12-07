@@ -8,7 +8,9 @@ package com.idi.Entity;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import com.idi.galaxiamelona.SoundManager;
@@ -21,10 +23,11 @@ import java.util.Date;
  */
 public class Jugador extends Nave {
 
-    protected Date ultimoDisparo;
+    protected Bitmap imagen;
 
     public Jugador(int x, int y, int vidas, Bitmap imagen) {
-        super(x, y, vidas, imagen);
+        super(x, y, vidas);
+        this.imagen = imagen;
     }
 
     public void move(int xx, int yy, int w, int h) {
@@ -39,12 +42,15 @@ public class Jugador extends Nave {
 
     }
 
-    public Disparo disparaJugador() {
+    @Override
+    public DisparoJugador dispara() {
         Date actual = (Calendar.getInstance()).getTime();
         if (ultimoDisparo == null || actual.getTime() - ultimoDisparo.getTime() >= Constantes.DELAY_CAPTAR_DISPARO) {
-            Disparo d = new DisparoJugador(x, y - Constantes.VELOCIDAD_DISPARO_JUGADOR);
+            float px = (x + (imagen.getWidth() / 2));
+            float py = (y - Constantes.DISPARO_JUGADOR_AUMENTO_Y_INICIAL);
+            DisparoJugador d = new DisparoJugador(px, py);
             SoundManager.disparoJugador();
-            ultimoDisparo=(Calendar.getInstance()).getTime();
+            ultimoDisparo = (Calendar.getInstance()).getTime();
             return d;
         }
         return null;
@@ -61,22 +67,53 @@ public class Jugador extends Nave {
     }
 
     public boolean clicado(int x, int y) {
-        if (y >= this.y && y <= this.y + 20 && x >= this.x && x <= this.x + 20) {
-            return true;
-        }
-
-        return false;
+        return y >= this.y && y <= this.y + 20 && x >= this.x && x <= this.x + 20;
     }
 
     // por ahora redeifnida solo para jugador enemigo usa la de nave analizar...
     @Override
     public RectF getRectangle() {
-        return new RectF(x, y, x + Constantes.TAMANO_LADO_NAVE_JUGADOR, y
-                + Constantes.TAMANO_LADO_NAVE_JUGADOR);
+        return new RectF(x, y, x + imagen.getWidth(), y + imagen.getHeight());
     }
 
     public void tocado() {
         this.vidas -= 1;
 
     }
+
+    public void moverDerecha() {
+        if ((x + imagen.getWidth() - 10) + velocidad >= Constantes.ANCHO_PANTALLA) {
+            x = 0;
+        } else {
+            x = x + velocidad;
+        }
+
+    }
+
+    public void MoverIzquierda() {
+        if (x - velocidad + 10 <= 0) {
+            x = Constantes.ANCHO_PANTALLA - imagen.getWidth();
+        } else {
+            x = x - velocidad;
+        }
+    }
+
+    public Bitmap getImagen() {
+        return imagen;
+    }
+
+    public void setImagen(Bitmap imagen) {
+        this.imagen = imagen;
+    }
+
+    public void pintaVidas(Canvas canvas) {
+        int separacion = 50;
+        int xinicial = 20;
+        int yinicial = 20;
+        Bitmap imagen = TexturasManager.getTextura(Constantes.TEXTURAS_TEXTURA_JUGADOR_VIDAS);
+        for (int i = 0; i < getVidas(); ++i) {
+            canvas.drawBitmap(imagen, xinicial + (i * imagen.getWidth()) + separacion, yinicial, new Paint());
+        }
+    }
+
 }

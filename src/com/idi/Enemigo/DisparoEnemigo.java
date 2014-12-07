@@ -1,15 +1,7 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 
 package com.idi.Enemigo;
 
-import android.content.res.AssetManager;
 import android.graphics.Bitmap;
-import android.graphics.Rect;
-import com.idi.Entity.TexturasManager;
 import com.idi.Entity.Constantes;
 import com.idi.Entity.Disparo;
 
@@ -19,8 +11,13 @@ import com.idi.Entity.Disparo;
  */
 public class DisparoEnemigo extends Disparo {
 
-    public DisparoEnemigo(float x, float y) {
-       super(x,y,TexturasManager.getTextura(Constantes.TEXTURAS_TEXTURA_DISPAROENEMIGO));
+    public DisparoEnemigo(float x, float y, Bitmap imagen) {
+       super(x,y,imagen);
     }
     
+    @Override
+    public void mover() {
+        this.y += Constantes.VELOCIDAD_DISPARO_ENEMIGO;
+    }
+       
 }

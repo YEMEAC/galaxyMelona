@@ -65,4 +65,8 @@ public class Colision {
         }
     }
 
+    int getFotograma() {
+        return fotograma;
+    }
+
 }

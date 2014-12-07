@@ -11,6 +11,7 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import java.util.Date;
 
 /**
  *
@@ -21,32 +22,21 @@ public abstract class Nave {
     protected float  x;
     protected float y;
     protected int vidas;
-    protected int velocidad;
-    protected int color = Color.BLACK;
-    protected Bitmap imagen;
-    //RectF dimension = new RectF();
+    protected int velocidad=Constantes.VELOCIDA_INICIAL_JUGADOR;
+  
+    protected Date ultimoDisparo;
     
     //enemigas basicas
-    public Nave(float x, float y, int v, Bitmap imagen){
-        velocidad=1;
+    public Nave(float x, float y, int v){
         vidas=v;
         this.x=x;
         this.y=y;
-        this.imagen=imagen;
     }
     
     public int getVidas() {
         return vidas;
     }    
     
-    public void moverDerecha(){
-        x+=1*velocidad;
-        
-    }
-    
-    public void MoverIzqueirda(){
-        x-=1*velocidad;
-    }
     
     public int getVelocidad() {
 		return velocidad;
@@ -54,14 +44,6 @@ public abstract class Nave {
 
 	public void setVelocidad(int velocidad) {
 		this.velocidad = velocidad;
-	}
-
-	public int getColor() {
-		return color;
-	}
-
-	public void setColor(int color) {
-		this.color = color;
 	}
 
 	public void setVidas(int vidas) {
@@ -85,16 +67,20 @@ public abstract class Nave {
 		this.y = y;
 	}
 
-    public Bitmap getImagen() {
-        return imagen;
+    public Date getUltimoDisparo() {
+        return ultimoDisparo;
     }
 
-    public void setImagen(Bitmap imagen) {
-        this.imagen = imagen;
+    public void setUltimoDisparo(Date ultimoDisparo) {
+        this.ultimoDisparo = ultimoDisparo;
+    }
+    
+    public void aumentarVidas(){
+        ++vidas;
     }
     
     public abstract void avanzar();
     public abstract void retroceder();
-    //public abstract Disparo dispara();
+    public abstract Disparo dispara();
     public abstract RectF getRectangle();
 }

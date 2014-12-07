@@ -1,19 +1,19 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package com.idi.Entity;
 
 import static android.R.attr.path;
 import android.content.Context;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.util.DisplayMetrics;
+import com.idi.Enemigo.DisparoEnemigo;
 import com.idi.Enemigo.Enemigo;
 import com.idi.Formaciones.A;
 import com.idi.Formaciones.Formacion;
@@ -40,8 +40,8 @@ public class Escena {
     Jugador jugador;
     Formacion formacion;
 
-    ArrayList<Disparo> disparosJugador = new ArrayList<Disparo>();
-    ArrayList<Disparo> disparosEnemigos = new ArrayList<Disparo>();
+    ArrayList<DisparoJugador> disparosJugador = new ArrayList<DisparoJugador>();
+    ArrayList<DisparoEnemigo> disparosEnemigos = new ArrayList<DisparoEnemigo>();
     ArrayList<Colision> colisiones = new ArrayList<Colision>();
 
     SoundManager musica;
@@ -54,6 +54,8 @@ public class Escena {
         DisplayMetrics metrics = context.getResources().getDisplayMetrics();
         Constantes.ANCHO_PANTALLA = metrics.widthPixels;
         Constantes.LARGO_PANTALLA = metrics.heightPixels;
+        Constantes.POSICION_INICIAL_JUGADOR_X=metrics.widthPixels/2;
+        Constantes.POSICION_INICIAL_JUGADOR_Y=metrics.heightPixels-90;
         
         texturasManager = new TexturasManager(asset);
         this.asset = asset;
@@ -77,7 +79,7 @@ public class Escena {
     public void colisionesDisparosJugador() {
 
         Iterator<Enemigo> itEnemigos = formacion.getEnemigos().iterator();
-        Iterator<Disparo> itDisparosJugador = disparosJugador.iterator();
+        Iterator<DisparoJugador> itDisparosJugador = disparosJugador.iterator();
         Disparo disparo = null;
         Enemigo enemigo = null;
         int tocado;
@@ -118,22 +120,19 @@ public class Escena {
         }
 
         //FALTA ELIMINAR COLIISIONES DEIFINITIVAMENTE
-        // avanzar colisiones antiguas, detectar colisiones en 3 estado
-		/*Iterator<Colision> itColisiones = colisiones.iterator();
-         Colision colision = null;
-         while (itColisiones.hasNext()) {
-         colision = itColisiones.next();
-         System.out.println("colision avanza");
-         int aux = colision.avanzarColision();
-         //if (aux == 1)
-         //itColisiones.remove();
-         }*/
+	Iterator<Colision> itColisiones = colisiones.iterator();
+        Colision colision;
+        while (itColisiones.hasNext()) {
+            colision = itColisiones.next();
+            if (colision.getFotograma() >= Constantes.FOTOGRAMAS_COLISION)
+            itColisiones.remove();
+        }
     }
 
     public void colisionesDisparosEnemigo() {
-        int tocado = 0;
-        Iterator<Disparo> it = disparosEnemigos.iterator();
-        Disparo disparo = null;
+        int tocado = 0; //solo me puede tocar una vez por comprobacion
+        Iterator<DisparoEnemigo> it = disparosEnemigos.iterator();
+        Disparo disparo;
         while (it.hasNext() && tocado == 0) {
             disparo = it.next();
             if (jugador.getRectangle().intersect(disparo.getRectangle())) {
@@ -151,19 +150,19 @@ public class Escena {
     }
 
     public void moverFormacion() {
-        formacion.mover(disparosEnemigos);
+        formacion.moverFormacion(disparosEnemigos);
     }
 
     public void avanzarDisparosJugador() {
         for (int i = 0; i < disparosJugador.size(); ++i) {
-            disparosJugador.get(i).moveDisparoJugador();
+            disparosJugador.get(i).mover();
         }
 
-        Iterator<Disparo> it = disparosJugador.iterator();
-        Disparo disparo = null;
+        Iterator<DisparoJugador> it = disparosJugador.iterator();
+        Disparo disparo;
         while (it.hasNext()) {
             disparo = it.next();
-            if (disparo.getY() < 0 || disparo.getY() > 480) {
+            if (disparo.getY() < 0 || disparo.getY() > Constantes.LARGO_PANTALLA) {
                 it.remove();
             }
         }
@@ -171,14 +170,14 @@ public class Escena {
 
     public void avanzarDisparosEnemigos() {
         for (int i = 0; i < disparosEnemigos.size(); ++i) {
-            disparosEnemigos.get(i).moveDisparoEnemigo();
+            disparosEnemigos.get(i).mover();
         }
 
-        Iterator<Disparo> it = disparosEnemigos.iterator();
-        Disparo disparo = null;
+        Iterator<DisparoEnemigo> it = disparosEnemigos.iterator();
+        Disparo disparo;
         while (it.hasNext()) {
             disparo = it.next();
-            if (disparo.getY() < 0 || disparo.getY() > 480) {
+            if (disparo.getY() < 0 || disparo.getY() > Constantes.LARGO_PANTALLA) {
                 it.remove();
             }
         }
@@ -200,26 +199,20 @@ public class Escena {
         this.formacion = formacion;
     }
 
-    public List<Disparo> getDisparosJugador() {
+    public List<DisparoJugador> getDisparosJugador() {
         return disparosJugador;
     }
 
-    public void setDisparosJugador(ArrayList<Disparo> disparos) {
+    public void setDisparosJugador(ArrayList<DisparoJugador> disparos) {
         this.disparosJugador = disparos;
     }
 
-    public ArrayList<Disparo> getDisparosEnemigos() {
+    public ArrayList<DisparoEnemigo> getDisparosEnemigos() {
         return disparosEnemigos;
     }
 
-    public void setDisparosEnemigos(ArrayList<Disparo> disparosEnemigos) {
+    public void setDisparosEnemigos(ArrayList<DisparoEnemigo> disparosEnemigos) {
         this.disparosEnemigos = disparosEnemigos;
-    }
-
-    public void addDisparo(Disparo d) {
-        if (d != null) {
-            disparosJugador.add(d);
-        }
     }
 
     public ArrayList<Colision> getColisiones() {
@@ -233,9 +226,40 @@ public class Escena {
     private Colision crearColision(float x, float y) {
         return new Colision(x, y, asset, TexturasManager.getAnimacionExplocionEnemigo(x));
     }
+    
+    public void addDisparo(DisparoJugador d) {
+        if (d != null) {
+            disparosJugador.add(d);
+        }
+    }
 
     public void jugadorDispara() {
-        addDisparo(jugador.disparaJugador());
+        addDisparo(jugador.dispara());
     }
+
+    public Estadistica getEstadistica() {
+        return estadistica;
+    }
+
+    public void setEstadistica(Estadistica estadistica) {
+        this.estadistica = estadistica;
+    }
+
+    public SoundManager getMusica() {
+        return musica;
+    }
+
+    public void setMusica(SoundManager musica) {
+        this.musica = musica;
+    }
+
+    public TexturasManager getTexturasManager() {
+        return texturasManager;
+    }
+
+    public void setTexturasManager(TexturasManager texturasManager) {
+        this.texturasManager = texturasManager;
+    }
+
 
 }

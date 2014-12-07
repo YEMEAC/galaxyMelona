@@ -2,15 +2,20 @@ package com.idi.Formaciones;
 
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
-import java.util.ArrayList;
-import java.util.Random;
-
 import com.idi.Enemigo.Cabo;
+import com.idi.Enemigo.Coronel;
+import com.idi.Enemigo.DisparoEnemigo;
 import com.idi.Enemigo.Enemigo;
+import com.idi.Enemigo.Sargento;
+import com.idi.Enemigo.Teniente;
 import com.idi.Entity.Constantes;
 import com.idi.Entity.Disparo;
 import com.idi.Entity.Jugador;
 import com.idi.Entity.TexturasManager;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Random;
 
 public class A extends Formacion {
 
@@ -19,83 +24,75 @@ public class A extends Formacion {
         super(jugador);
         int x = 24;
         int y = 20;
-        
+        int filas=4; int columas=7;
         //formacion cuadrada
-       ArrayList<Integer> coordenadasIniciales = new ArrayList<Integer>();
-        for (int i = 0; i < 10; i++) { 
-            for (int j = 0; j < 10; j++) { 
+        ArrayList<Integer> coordenadasIniciales = new ArrayList<Integer>();
+        for (int i = 0; i < filas; i++) {
+            for (int j = 0; j < columas; j++) {
                 coordenadasIniciales.add(i);
                 coordenadasIniciales.add(j);
             }
         }
 
-        construirFormacion(coordenadasIniciales,4,7, 300 * 5, TexturasManager.getTextura(Constantes.TEXTURAS_TEXTURA_ENEMIGO_CABO));
+        construirFormacion(coordenadasIniciales, filas, columas);
 
-        /*int n = Constantes.NUMERO_NAVES_NIVEL_UNO;
-        int elementosPorFila = 8;
-        int filas = n / elementosPorFila;
+    }
 
-        for (int i = 0; i < filas; ++i) {
-            for (int j = 0; j < elementosPorFila; ++j) {
-                enemigos.add(new Cabo(x, y));
-                x += Constantes.DISTANCIA_HORIZONTAL_ENEMIGOS;
+    @Override
+    void construirFormacion(ArrayList<Integer> coordenadasIniciales, int numeroFilas, int numeroColumnas) {
+
+        int escala = 1;
+        int topBuffer = (int) ((Constantes.LARGO_PANTALLA / 15) * escala);
+        int size = (int) ((Constantes.LARGO_PANTALLA / 30) * escala) + 10;
+        int margen = (int) ((size / 5) * escala);
+
+        int fila;
+        int columna;
+        int count = 0;
+        //for (int fil = 0; fil < numeroFilas; fil++) {
+
+        while (count < coordenadasIniciales.size()) {
+            fila = coordenadasIniciales.get(count);
+            columna = coordenadasIniciales.get(count+1);
+          
+            if (fila == 0) {
+                if(columna%2==0)
+                    enemigos.add(new Teniente((columna * size) + (columna * margen), (fila * size) + (fila * margen) + topBuffer));
+                else
+                     enemigos.add(new Coronel((columna * size) + (columna * margen), (fila * size) + (fila * margen) + topBuffer));
+                count += 2;
+            } else if (fila == 1) {
+                enemigos.add(new Sargento((columna * size) + (columna * margen), (fila * size) + (fila * margen) + topBuffer));
+                count += 2;
+            } else {
+                enemigos.add(new Cabo((columna * size) + (columna * margen), (fila * size) + (fila * margen) + topBuffer));
+                count += 2;
             }
-            y += Constantes.DISTANCIA_VERTICAL_ENEMIGOS;
-            x = Constantes.DISTANCIA_HORIZONTAL_ENEMIGOS;
-        }*/
+
+        }
+        //}
     }
 
     public void moverBloque() {
         if (saltos == Constantes.SALTOS_BLOQUE_ENEMIGO) {
             desplazamiento *= -1;
             saltos = 0;
+        } else {
+            ++saltos;
         }
 
         for (int i = 0; i < enemigos.size(); ++i) {
             enemigos.get(i).setX(enemigos.get(i).getX() + desplazamiento);
         }
 
-        ++saltos;
     }
 
-    public void moverAtacantes(ArrayList<Disparo> disparosEnemigos) {
+    public void moverAtacantes(ArrayList<DisparoEnemigo> disparosEnemigos) {
         if (!atacantes.isEmpty()) {
-
-            int aux = 1;
-            if (saltos % 2 == 0) {
-                aux *= -1;
-            }
-
             float Xjugador = jugador.getX();
             float Yjugador = jugador.getY();
             for (int i = 0; i < atacantes.size(); ++i) {
-                float Xatacante = atacantes.get(i).getX();
-                float Yatacante = atacantes.get(i).getY();
-
-                float tx=Xjugador-Xatacante;
-                float ty=Yjugador-Yatacante;
-                float dist = (float)Math.sqrt(tx*tx  + ty*ty);
-            
-                float velx=(tx/dist)*2;
-                float vely=(ty/dist)*2;
-                
-                if(dist>1){
-                    atacantes.get(i).setX(velx);
-                    atacantes.get(i).setY(vely);
-                }
-                  
-                
-               /* Xatacante += aux * distanciaRespectoJugador / (Constantes.ATACANTES_DESPLAZAMIENTO_HORIZONTAL * 0.6);
-                Yatacante += distanciaRespectoJugador / (Constantes.ATACANTES_DESPLAZAMIENTO_VERTICAL * 0.8);
-
-                               //Xatacante=(int)((Xatacante - Xjugador)/0.5)*Constantes.ATACANTES_DESPLAZAMIENTO_HORIZONTAL;
-                // Yatacante=aux*((int)((Yjugador-Yatacante)/0.5)*Constantes.ATACANTES_DESPLAZAMIENTO_VERTICAL);
-                atacantes.get(i).setX(Xatacante);
-                atacantes.get(i).setY(Yatacante);*/
-                
-
-                disparosEnemigos.add(atacantes.get(i).dispara());
-
+                atacantes.get(i).movimientoAtacante(Xjugador, Yjugador, disparosEnemigos);
             }
 
         } else {

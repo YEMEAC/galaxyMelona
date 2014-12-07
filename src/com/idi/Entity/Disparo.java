@@ -16,9 +16,9 @@ import java.util.List;
  */
 public abstract class Disparo {
 
-    double velocidad;
-    float x;
-    float y;
+    protected double velocidad;
+    protected float x;
+    protected float y;
     protected Bitmap imagen;
 
     public Disparo() {
@@ -30,15 +30,9 @@ public abstract class Disparo {
         this.y = y;
         this.imagen=imagen;
     }
-
-    public void moveDisparoJugador() {
-        this.y -= Constantes.VELOCIDAD_DISPARO_JUGADOR;
-    }
-
-    public void moveDisparoEnemigo() {
-        this.y += Constantes.VELOCIDAD_DISPARO_ENEMIGO;
-    }
-
+    
+    public abstract void mover();
+    
     public double getVelocidad() {
         return velocidad;
     }
@@ -64,7 +58,7 @@ public abstract class Disparo {
     }
 
     public RectF getRectangle() {
-        return new RectF(x, y, x + Constantes.TAMANO_LADO_NAVE_ENEMIGO, y + Constantes.TAMANO_LADO_NAVE_ENEMIGO);
+        return new RectF(x, y, x + imagen.getWidth(), y + imagen.getHeight());
     }
 
     public Bitmap getImagen() {
@@ -74,5 +68,4 @@ public abstract class Disparo {
     public void setImagen(Bitmap imagen) {
         this.imagen = imagen;
     }
-
 }
