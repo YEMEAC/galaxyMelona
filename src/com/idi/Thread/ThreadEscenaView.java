@@ -23,7 +23,7 @@ public class ThreadEscenaView extends Thread {
     private static final String TAG = ThreadEscenaView.class.getSimpleName();
 
     // desired fps
-    private final static int MAX_FPS = 48;
+    private final static int MAX_FPS = 70;
     // maximum number of frames to be skipped
     private final static int MAX_FRAME_SKIPS = 5;
     // the frame period
@@ -37,6 +37,8 @@ public class ThreadEscenaView extends Thread {
 
     // flag to hold game state 
     private boolean running;
+    
+    Canvas canvas;
 
     public void setRunning(boolean running) {
         this.running = running;
@@ -50,7 +52,7 @@ public class ThreadEscenaView extends Thread {
 
     @Override
     public void run() {
-        Canvas canvas;
+        
         Log.d(TAG, "Starting game loop");
 
         long beginTime;		// the time when the cycle begun
@@ -116,6 +118,14 @@ public class ThreadEscenaView extends Thread {
                 }
             }	// end finally
         }
+    }
+
+    public Canvas getCanvas() {
+        return canvas;
+    }
+
+    public void setCanvas(Canvas canvas) {
+        this.canvas = canvas;
     }
 
 }

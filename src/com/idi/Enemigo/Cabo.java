@@ -10,68 +10,97 @@ import com.idi.Entity.TexturasManager;
 import com.idi.Entity.Constantes;
 import com.idi.Entity.Disparo;
 import java.util.ArrayList;
+import java.util.Random;
 
 public class Cabo extends Enemigo {
 
-    protected Bitmap imagenSegundaria;
+    int direccionMovimiento;
 
     public Cabo(float x, float y) {
-        super(x, y, Constantes.NUMERO_VIDAS_CABO, 
+        super(x, y, Constantes.NUMERO_VIDAS_CABO,
                 TexturasManager.getTextura(Constantes.TEXTURAS_TEXTURA_ENEMIGO_CABO_1),
                 TexturasManager.getTextura(Constantes.TEXTURAS_TEXTURA_ENEMIGO_CABO_2));
         tipo = EnemigoTipo.CABO;
         bonus = Constantes.BONUS_CABO;
+        Random r = new Random();
+        int min = 0;
+        int max = 1;
+        direccionMovimiento = r.nextInt(max - min + 1) + min;
 
     }
 
-        @Override
-        public void movimientoAtacante(float Xjugador, float Yjugador, ArrayList<DisparoEnemigo> disparosEnemigos) {
-        float Xatacante = x;
-        float Yatacante = y;
+    @Override
+    public void movimientoAtacante(float targetX, float targetY, ArrayList<DisparoEnemigo> disparosEnemigos) {
 
-        float tx = Xjugador - Xatacante;
-        float ty = Yjugador - Yatacante;
+        float tx = targetX - x;
+        float ty = targetY - y;
         float dist = (float) Math.sqrt(tx * tx + ty * ty);
 
-        float velx;
-        float vely;
+        float velX;
+        float velY;
         float thrust = Constantes.VELOCIDAD_ENEMIGO_CABO_1;
         float thrust2 = Constantes.VELOCIDAD_ENEMIGO_CABO_2;
 
-        if (dist > 400) {
-            if (contadorDisparos == 0) {
-                disparosEnemigos.add(this.dispara());
+        if (direccionMovimiento == 0) {
+            tx = Constantes.ANCHO_PANTALLA - x;
+            ty = (Constantes.LARGO_PANTALLA / 2) - y;
+            dist = (float) Math.sqrt(tx * tx + ty * ty);
+            velX = (tx / dist) * thrust + 5;
+            velY = (ty / dist) * thrust;
+            if (x >= Constantes.ANCHO_PANTALLA) {
+                direccionMovimiento = 3;
             }
-
-            velx = Xatacante + (tx / dist) * thrust + 5;
-            vely = Yatacante + (ty / dist) * thrust;
-        } else if (dist > 200) {
-            if (contadorDisparos == 1) {
-                disparosEnemigos.add(this.dispara());
+        } else if (direccionMovimiento == 1) {
+            tx = -30 - x;
+            ty = (Constantes.LARGO_PANTALLA / 2) - y;
+            dist = (float) Math.sqrt(tx * tx + ty * ty);
+            velX = (tx / dist) * thrust + 5;
+            velY = (ty / dist) * thrust;
+            if (x <= -30) {
+                direccionMovimiento = 4;
             }
-
-            velx = Xatacante + (tx / dist) * thrust2;
-            vely = Yatacante + (ty / dist) * thrust2;
         } else {
-            velx = Xatacante;
-            vely = Yatacante + thrust2;
-        }
-        
-        if(vely>Constantes.LARGO_PANTALLA){
-            vely=0;
-            contadorDisparos=0; //afinar para dispare cuando haya bajado un poco
+            if (direccionMovimiento == 3) {
+                tx = 0 - x;
+            } else if (direccionMovimiento == 4) {
+                tx = Constantes.ANCHO_PANTALLA - x;
+            }
+
+            ty = targetY - y;
+            dist = (float) Math.sqrt(tx * tx + ty * ty);
+            velX = (tx / dist) * thrust2;
+            velY = (ty / dist) * thrust2;
         }
 
-        this.setX(velx);
-        this.setY(vely);
+        if (y + velY > Constantes.LARGO_PANTALLA) {
+            velY = 0;
+            y = 0;
+            velX = 0;
+            Random r = new Random();
+            int min = 0;
+            int max = 1;
+            direccionMovimiento = r.nextInt(max - min + 1) + min;
+        }
+
+        if (velY < 0) {
+            velY *= -1;
+        }
+
+        x += velX;
+        y += velY;
     }
-        
+
     public DisparoEnemigo dispara() {
         float px = x + (imagen1.getWidth() / 2);
         float py = y + Constantes.VELOCIDAD_DISPARO_ENEMIGO;
-        DisparoEnemigo d = new DisparoEnemigo(px, py,TexturasManager.getTextura(Constantes.TEXTURAS_TEXTURA_DISPARO_ENEMIGO_CABO));
+        DisparoEnemigo d = new DisparoEnemigo(px, py, TexturasManager.getTextura(Constantes.TEXTURAS_TEXTURA_DISPARO_ENEMIGO_CABO));
         contadorDisparos++;
         return d;
+    }
+
+    @Override
+    public long getDelayDisparo() {
+        return Constantes.DELAY_CAPTAR_CABO;
     }
 
 }

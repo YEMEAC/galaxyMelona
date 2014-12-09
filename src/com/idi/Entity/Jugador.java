@@ -45,7 +45,7 @@ public class Jugador extends Nave {
     @Override
     public DisparoJugador dispara() {
         Date actual = (Calendar.getInstance()).getTime();
-        if (ultimoDisparo == null || actual.getTime() - ultimoDisparo.getTime() >= Constantes.DELAY_CAPTAR_DISPARO) {
+        if (ultimoDisparo == null || actual.getTime() - ultimoDisparo.getTime() >= Constantes.DELAY_CAPTAR_DISPARO_JUGADOR) {
             float px = (x + (imagen.getWidth() / 2));
             float py = (y - Constantes.DISPARO_JUGADOR_AUMENTO_Y_INICIAL);
             DisparoJugador d = new DisparoJugador(px, py);
@@ -76,9 +76,13 @@ public class Jugador extends Nave {
         return new RectF(x, y, x + imagen.getWidth(), y + imagen.getHeight());
     }
 
+    public void aumentarVidas(){
+        ++vidas;
+    }
+    
     public void tocado() {
-        this.vidas -= 1;
-
+        if(vidas>=1)
+            this.vidas -= 1;
     }
 
     public void moverDerecha() {

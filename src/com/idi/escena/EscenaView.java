@@ -20,13 +20,21 @@ import com.idi.Formaciones.Formacion;
 import com.idi.Thread.ThreadAtacantes;
 import com.idi.Thread.ThreadDisparo;
 import com.idi.Thread.ThreadEscenaView;
+import com.idi.galaxiamelona.EscenaActivity;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class EscenaView extends SurfaceView implements SurfaceHolder.Callback, OnKeyListener {
 
+    private EscenaActivity parentView;
     private ThreadEscenaView paintThread;
     private ThreadAtacantes threadAtacantes;
+    // private AdministradorControles administradorControles
     // private ThreadAtacantes colisionThread;
 
     private Escena escena;
@@ -36,15 +44,18 @@ public class EscenaView extends SurfaceView implements SurfaceHolder.Callback, O
     private int jugadorSelecionado = 0;
     private int arrastro = 0;
     private int click = 0;
+    private boolean gameOver;
+    private Date inicioGameOver;
 
     private AssetManager asset;
 
-    public EscenaView(Context context, AssetManager asset) {
+    public EscenaView(Context context, AssetManager asset, EscenaActivity a) {
         super(context);
+        parentView = a;
         setFocusable(true); // make sure we get key events
         getHolder().addCallback(this);
         this.asset = asset;
-        escena = new Escena(1, context, asset);
+        escena = new Escena(1, context, asset, this);
 
     }
 
@@ -73,31 +84,32 @@ public class EscenaView extends SurfaceView implements SurfaceHolder.Callback, O
         }
     }
 
+    @Override
     public boolean onKey(View v, int keyCode, KeyEvent event) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return true;
+        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
+        escena.getTeclas().remove(keyCode);
+        return true;
     }
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         super.onKeyDown(keyCode, event);
-        if (keyCode == KeyEvent.KEYCODE_D) {
-            escena.getJugador().moverDerecha();
-        }
-
-        if (keyCode == KeyEvent.KEYCODE_A) {
-            escena.getJugador().MoverIzquierda();
-        }
-
-        if (keyCode == KeyEvent.KEYCODE_W) {
-            escena.jugadorDispara();
-        }
+        escena.getTeclas().add(keyCode);
         return true;
     }
 
     public void update() {
-        getEscena().avanzarDisparos();
-        getEscena().colisiones();
-        getEscena().moverFormacion();
+        if (!gameOver) {
+            getEscena().movimientoJugador();
+            getEscena().avanzarDisparos();
+            getEscena().colisiones();
+            getEscena().moverFormacion();
+        }
     }
 
     public void render(Canvas canvas) {
@@ -156,17 +168,80 @@ public class EscenaView extends SurfaceView implements SurfaceHolder.Callback, O
     @Override
     public void draw(Canvas canvas) {
         Paint paint = new Paint();
-        pintaPaneles(canvas);
-        pintaColisiones(canvas);
-        pintaEnemigos(paint, canvas);
-        pintaDisparos(paint, canvas);
-        pintaJugador(paint, canvas);
+
+        if (!gameOver) {
+            pintaPaneles(canvas);
+            pintaColisiones(canvas);
+            pintaEnemigos(paint, canvas);
+            pintaDisparos(paint, canvas);
+            pintaJugador(paint, canvas);
+            escena.comprobarFinDeJugador();
+        } else {
+            pintaFinPartida();
+        }
     }
-  
+
     private void pintaPaneles(Canvas canvas) {
-       escena.getEstadistica().pintaPuntuacion(canvas);
-       escena.getJugador().pintaVidas(canvas);
-       escena.getEstadistica().pintaCronometro(canvas);
+        escena.getEstadistica().pintaPuntuacion(canvas);
+        escena.getJugador().pintaVidas(canvas);
+        escena.getEstadistica().pintaCronometro(canvas);
+    }
+
+    private void pintaFinPartida() {
+        Date now = (Calendar.getInstance()).getTime();
+        if (now.getTime() - inicioGameOver.getTime() > Constantes.TIEMPO_PANTALLA_FIN_JUEGO) {
+            escena.getSoundManager().finDeJuego();
+            this.parentView.finalizarEscena();
+        } else {
+            if (escena.getEstadistica().isNuevoRecord()) {
+                recordsSuperado();
+            } else {
+                gameOver();
+            }
+        }
+    }
+
+    private void recordsSuperado() {
+        Paint paint = new Paint();
+        paint.setTextSize(40);
+        long c;
+        int count = 1;
+        int separacion = 40;
+
+        paint.setColor(Color.BLUE);
+        String a = "Nuevo Record! " + escena.getEstadistica().getPuntuacion() + "\n";
+        this.paintThread.getCanvas().drawText(a, Constantes.ANCHO_PANTALLA / 3, (Constantes.LARGO_PANTALLA / 3), paint);
+        paint.setColor(Color.RED);
+        //para obtener la lista en orden decreciente
+        ArrayList<Long> auxHistorico = new ArrayList<Long>();
+        auxHistorico.addAll(escena.getEstadistica().getHistoricoPuntuacionesLong());
+        Collections.reverse(auxHistorico);
+        Iterator<Long> it = auxHistorico.iterator();
+
+        while (it.hasNext()) {
+            c = it.next();
+            if (c == escena.getEstadistica().getPuntuacion()) {
+                paint.setColor(Color.BLUE);
+                a = count + " " + c;
+                this.paintThread.getCanvas().drawText(a, (float) (Constantes.ANCHO_PANTALLA / 2), (Constantes.LARGO_PANTALLA / 3) + count * separacion, paint);
+                paint.setColor(Color.RED);
+            } else {
+                a = count + " " + c;
+                this.paintThread.getCanvas().drawText(a, (float) (Constantes.ANCHO_PANTALLA / 2), (Constantes.LARGO_PANTALLA / 3) + count * separacion, paint);
+            }
+            ++count;
+        }
+
+    }
+
+    public void gameOver() {
+        Paint paint = new Paint();
+        paint.setColor(Color.RED);
+
+        String a = "GAME OVER \n";
+
+        paint.setTextSize(50);
+        this.paintThread.getCanvas().drawText(a, Constantes.ANCHO_PANTALLA / 2 - 100, Constantes.LARGO_PANTALLA / 2, paint);
     }
 
     private void pintaColisiones(Canvas canvas) {
@@ -188,7 +263,7 @@ public class EscenaView extends SurfaceView implements SurfaceHolder.Callback, O
         while (it.hasNext()) {
             atacante = it.next();
             //para que no intente pintar ese segundo que estan empezando a volver a bajra y estan fuera
-            if (atacante.getY() > 0 && atacante.getY() < Constantes.LARGO_PANTALLA ) {
+            if (atacante.getY() > 0 && atacante.getY() < Constantes.LARGO_PANTALLA) {
                 canvas.drawBitmap(atacante.getImagenAnimacionBloque(), atacante.getX(), atacante.getY(), paint);
             }
         }
@@ -250,5 +325,61 @@ public class EscenaView extends SurfaceView implements SurfaceHolder.Callback, O
     public AssetManager getAsset() {
         return asset;
     }
-    
+
+    public EscenaActivity getParentView() {
+        return parentView;
+    }
+
+    public void setParentView(EscenaActivity parentView) {
+        this.parentView = parentView;
+    }
+
+    public ThreadAtacantes getThreadAtacantes() {
+        return threadAtacantes;
+    }
+
+    public void setThreadAtacantes(ThreadAtacantes threadAtacantes) {
+        this.threadAtacantes = threadAtacantes;
+    }
+
+    public int getJugadorSelecionado() {
+        return jugadorSelecionado;
+    }
+
+    public void setJugadorSelecionado(int jugadorSelecionado) {
+        this.jugadorSelecionado = jugadorSelecionado;
+    }
+
+    public int getArrastro() {
+        return arrastro;
+    }
+
+    public void setArrastro(int arrastro) {
+        this.arrastro = arrastro;
+    }
+
+    public int getClick() {
+        return click;
+    }
+
+    public void setClick(int click) {
+        this.click = click;
+    }
+
+    public boolean isGameOver() {
+        return gameOver;
+    }
+
+    public void setGameOver(boolean gameOver) {
+        this.gameOver = gameOver;
+    }
+
+    public Date getInicioGameOver() {
+        return inicioGameOver;
+    }
+
+    public void setInicioGameOver(Date inicioGameOver) {
+        this.inicioGameOver = inicioGameOver;
+    }
+
 }

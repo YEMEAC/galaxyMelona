@@ -29,7 +29,12 @@ public class SoundManager {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        //principalAmbiente.start();
+        principalAmbiente.start();
+    }
+    
+    public void finDeJuego(){
+        if(principalAmbiente!=null && principalAmbiente.isPlaying())
+            principalAmbiente.stop();
     }
 
     public void pausarAmbiente() {
@@ -52,7 +57,7 @@ public class SoundManager {
             boolean libreEncontrado = false;
             for (int i = 0; i < explosion.size() && !libreEncontrado; ++i) {
                 if (!explosion.get(i).isPlaying()) {
-                    //explosion.get(i).start();
+                    explosion.get(i).start();
                     libreEncontrado = true;
                 }
             }
@@ -68,7 +73,7 @@ public class SoundManager {
             boolean libreEncontrado = false;
             for (int i = 0; i < disparoJugador.size() && !libreEncontrado; ++i) {
                 if (!disparoJugador.get(i).isPlaying()) {
-                    //disparoJugador.get(i).start();
+                    disparoJugador.get(i).start();
                     libreEncontrado = true;
                 }
             }

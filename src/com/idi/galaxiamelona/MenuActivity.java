@@ -1,6 +1,7 @@
 package com.idi.galaxiamelona;
 
 
+
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,6 +11,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -20,6 +22,9 @@ public class MenuActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+                //assuming your Layout is named linearlayout1:
+                //LinearLayout ll = (LinearLayout) findViewById(R.layout.activity_main);
+                //ll.setBackgroundResource(R.drawable.fondo.gif);
 		//ocultarBarras();
 		anadirListeners();	
 	}

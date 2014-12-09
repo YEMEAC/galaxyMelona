@@ -28,14 +28,20 @@ public final class Constantes {
     public static final int NUMERO_VIDAS_CORONEL = 1;
     public static final int NUMERO_VIDAS_TENIENTE = 2;
 
-    public static final long DELAY_CAPTAR_DISPARO = 600;
+    public static final long DELAY_CAPTAR_DISPARO_JUGADOR = 500;
+    public static final long  DELAY_CAPTAR_CABO = 2000;
+    public static final long DELAY_CAPTAR_SARGENTO = 3000;
+    public static final long DELAY_CAPTAR_CORONEL = 2000;
+    public static final long DELAY_CAPTAR_TENIENTE = 1500;
+    
+    
     public static float VELOCIDAD_ENEMIGO_CABO_1 = 15;
     public static float VELOCIDAD_ENEMIGO_CABO_2 = 12;
-    public static float VELOCIDAD_ENEMIGO_SARGENTO_1 = 15;
-    public static float VELOCIDAD_ENEMIGO_SARGENTO_2 = 12;
-    public static float VELOCIDAD_ENEMIGO_CORONEL_1 = 15;
-    public static float VELOCIDAD_ENEMIGO_CORONEL_2 = 12;
-    public static float VELOCIDAD_ENEMIGO_TENIENTE_1 = 15;
+    public static float VELOCIDAD_ENEMIGO_SARGENTO_1 = 20;
+    //public static float VELOCIDAD_ENEMIGO_SARGENTO_2 = 12;
+    public static float VELOCIDAD_ENEMIGO_CORONEL_1 = 20;
+    public static float VELOCIDAD_ENEMIGO_CORONEL_2 = 20;
+    public static float VELOCIDAD_ENEMIGO_TENIENTE_1 = 25;
     public static float VELOCIDAD_ENEMIGO_TENIENTE_2 = 12;
 
     //SI QUIERO PONER MENOS DELAY TENGO QUE ACORTAR EL SONIDO DE DISPARO 
@@ -104,6 +110,8 @@ public final class Constantes {
     public static String PATH_SONIDO_DISPARO_ENEMIGO = "sonidos/laserJugador.wav";
     public static String PATH_MUSICA_FONDO_ESCENA = "musica/background.mp3";
     public static String PATH_SPRITE_JUGADOR_VIDAS = "imagenes/jugadorVidas.png";
+    static int NUMERO_RECORS_GUARDADOS=5;
+    public static long TIEMPO_PANTALLA_FIN_JUEGO=4000;
     
     
    

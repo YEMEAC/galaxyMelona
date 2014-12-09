@@ -13,20 +13,20 @@ import java.util.Date;
 
 public abstract class Formacion {
 
-    protected Date ultimoMovimientoBloque;
-    protected Date ultimoMovimientoAtacantes;
     protected int saltos = 0;
     protected int desplazamiento = Constantes.LOGINTUD_SALTO_BLOQUE_ENEMIGO;
-    protected ArrayList<Enemigo> enemigos = new ArrayList<Enemigo>();
-    protected ArrayList<Enemigo> atacantes = new ArrayList<Enemigo>();
+    protected ArrayList<Enemigo> enemigos;
+    protected ArrayList<Enemigo> atacantes;
+    protected ArrayList<Integer> ordenAtacantes;
     Jugador jugador;
   
     abstract void construirFormacion(ArrayList<Integer> coordenadasIniciales, int numeroFilas, int numeroColumnas);
     
     public Formacion(Jugador jugador) {
         this.jugador = jugador;
-        ultimoMovimientoBloque = (Calendar.getInstance()).getTime();
-        ultimoMovimientoAtacantes = (Calendar.getInstance()).getTime();
+        enemigos = new ArrayList<Enemigo>();
+        atacantes = new ArrayList<Enemigo>();
+        
     }
 
     public void moverFormacion(ArrayList<DisparoEnemigo> disparosEnemigos) {

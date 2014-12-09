@@ -31,6 +31,7 @@ public abstract class Enemigo extends Nave {
     //ambas imagenes tiene las mismas dimensiones
     protected Bitmap imagen1;
     protected Bitmap imagen2;
+    protected Date ultimoDisparo;
 
     // enemigas basicas
     public Enemigo(float x, float y, int v, Bitmap a, Bitmap b) {
@@ -42,8 +43,7 @@ public abstract class Enemigo extends Nave {
     }
     
      public abstract void movimientoAtacante(float Xjugador, float Yjugador, ArrayList<DisparoEnemigo> disparosEnemigos);
-
-    //@Override
+     public abstract long getDelayDisparo();
 
     public Bitmap getImagenAnimacionBloque() {
         if (ultimaImagenUtilizada) {
@@ -107,6 +107,14 @@ public abstract class Enemigo extends Nave {
 
     public void setImagen2(Bitmap imagen) {
         this.imagen2 = imagen;
+    }
+
+    public int getContadorDisparos() {
+        return contadorDisparos;
+    }
+
+    public void setContadorDisparos(int contadorDisparos) {
+        this.contadorDisparos = contadorDisparos;
     }
 
 }

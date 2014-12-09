@@ -14,7 +14,9 @@ import com.idi.Entity.Jugador;
 import com.idi.Entity.TexturasManager;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.Random;
 
 public class A extends Formacion {
@@ -24,7 +26,8 @@ public class A extends Formacion {
         super(jugador);
         int x = 24;
         int y = 20;
-        int filas=4; int columas=7;
+        int filas = 4;
+        int columas = 7;
         //formacion cuadrada
         ArrayList<Integer> coordenadasIniciales = new ArrayList<Integer>();
         for (int i = 0; i < filas; i++) {
@@ -35,7 +38,19 @@ public class A extends Formacion {
         }
 
         construirFormacion(coordenadasIniciales, filas, columas);
+        OrdenAtacantes();
 
+    }
+
+    //obtener un orden aleatoria para decir los atacantes, tantos numeros/posiciones como atacantes enemigos
+    //disponibles para ser atacantes queden
+    private void OrdenAtacantes() {
+        ordenAtacantes = new ArrayList<Integer>();
+        for (int i = 0; i < getEnemigos().size(); ++i) {
+            ordenAtacantes.add(i);
+        }
+
+        Collections.shuffle(ordenAtacantes);
     }
 
     @Override
@@ -49,28 +64,31 @@ public class A extends Formacion {
         int fila;
         int columna;
         int count = 0;
-        //for (int fil = 0; fil < numeroFilas; fil++) {
 
-        while (count < coordenadasIniciales.size()) {
+        while (count < 2) {
             fila = coordenadasIniciales.get(count);
-            columna = coordenadasIniciales.get(count+1);
-          
-            if (fila == 0) {
-                if(columna%2==0)
-                    enemigos.add(new Teniente((columna * size) + (columna * margen), (fila * size) + (fila * margen) + topBuffer));
-                else
-                     enemigos.add(new Coronel((columna * size) + (columna * margen), (fila * size) + (fila * margen) + topBuffer));
-                count += 2;
-            } else if (fila == 1) {
-                enemigos.add(new Sargento((columna * size) + (columna * margen), (fila * size) + (fila * margen) + topBuffer));
-                count += 2;
-            } else {
-                enemigos.add(new Cabo((columna * size) + (columna * margen), (fila * size) + (fila * margen) + topBuffer));
-                count += 2;
-            }
+            columna = coordenadasIniciales.get(count + 1);
 
+            while (count < coordenadasIniciales.size()) {
+                fila = coordenadasIniciales.get(count);
+                columna = coordenadasIniciales.get(count + 1);
+
+                if (fila == 0) {
+                    if (columna % 2 == 0) {
+                        enemigos.add(new Teniente((columna * size) + (columna * margen), (fila * size) + (fila * margen) + topBuffer));
+                    } else {
+                        enemigos.add(new Coronel((columna * size) + (columna * margen), (fila * size) + (fila * margen) + topBuffer));
+                    }
+                    count += 2;
+                } else if (fila == 1) {
+                    enemigos.add(new Sargento((columna * size) + (columna * margen), (fila * size) + (fila * margen) + topBuffer));
+                    count += 2;
+                } else {
+                    enemigos.add(new Cabo((columna * size) + (columna * margen), (fila * size) + (fila * margen) + topBuffer));
+                    count += 2;
+                }
+            }
         }
-        //}
     }
 
     public void moverBloque() {
@@ -91,18 +109,31 @@ public class A extends Formacion {
         if (!atacantes.isEmpty()) {
             float Xjugador = jugador.getX();
             float Yjugador = jugador.getY();
+            Date actual = (Calendar.getInstance()).getTime();
             for (int i = 0; i < atacantes.size(); ++i) {
                 atacantes.get(i).movimientoAtacante(Xjugador, Yjugador, disparosEnemigos);
+
+                if (atacantes.get(i).getUltimoDisparo() == null || 
+                        actual.getTime() - atacantes.get(i).getUltimoDisparo().getTime() > atacantes.get(i).getDelayDisparo()) {
+                    disparosEnemigos.add((DisparoEnemigo) atacantes.get(i).dispara());
+                    atacantes.get(i).setUltimoDisparo(actual);
+                }
+
             }
 
         } else {
-            int min = 0;
-            int max = enemigos.size() - 1;
-            Random r = new Random();
-            for (int i = 0; i < 3 && !enemigos.isEmpty(); ++i) {
-                atacantes.add(enemigos.get(r.nextInt(max - min + 1) + min));
+            //refres de los atacantes disponibles para no salir del rango por enemigos eliminados
+            OrdenAtacantes();
+            Iterator<Integer> it = ordenAtacantes.iterator();
+            int count = 0;
+            int aux;
+            while (it.hasNext() && count < 3) {
+                aux = it.next();
+                atacantes.add(enemigos.get(aux));
+                it.remove();
+                ++count;
             }
-            //quito los atacantes de la formacion normal para que no le afecte el desplazamiento general
+
             for (int i = 0; i < atacantes.size(); ++i) {
                 enemigos.remove(atacantes.get(i));
             }

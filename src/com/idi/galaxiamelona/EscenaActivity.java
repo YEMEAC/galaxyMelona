@@ -24,7 +24,11 @@ public class EscenaActivity extends Activity{
 	}
 
 	public void setConviewAccion() {
-		setContentView(new EscenaView(this,assetManager));
+		setContentView(new EscenaView(this,assetManager,this));
 	}
+        
+        public void finalizarEscena(){
+            this.finish();
+        }
 
 }
