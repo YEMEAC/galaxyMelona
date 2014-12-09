@@ -41,7 +41,6 @@ public class Escena {
     public Escena(int nivel, Context context, AssetManager asset, EscenaView v) {
         teclas = new HashSet<Integer>();
         this.parent = v;
-
         DisplayMetrics metrics = context.getResources().getDisplayMetrics();
         Constantes.ANCHO_PANTALLA = metrics.widthPixels;
         Constantes.LARGO_PANTALLA = metrics.heightPixels;
@@ -68,9 +67,9 @@ public class Escena {
     }
 
     public void comprobarFinDeJugador() {
-        if ((jugador.getVidas() < 1 || (formacion.getAtacantes().isEmpty() && formacion.getEnemigos().isEmpty()))&&
-                colisiones.isEmpty()) { // colisiones empty para que deje reproducir la explocion final del jugador
-                                        //si pongo mas formaciones hay que poner otro flag de no quedan formaciones
+        if ((jugador.getVidas() < 1 || (formacion.getAtacantes().isEmpty() && formacion.getEnemigos().isEmpty()))
+                && colisiones.isEmpty()) { // colisiones empty para que deje reproducir la explocion final del jugador
+            //si pongo mas formaciones hay que poner otro flag de no quedan formaciones
             estadistica.actualizarGuardarPuntucion(parent.getContext());
             parent.setGameOver(true);
             parent.setInicioGameOver((Calendar.getInstance()).getTime());
@@ -92,7 +91,6 @@ public class Escena {
                 enemigo = itEnemigos.next();
                 if (enemigo.getRectangle().intersect(disparo.getRectangle())) {
                     tocado = 1;
-                    System.out.println("colision, enemigo muerto -enemigo -disparojugador +colision");
                     estadistica.addBonus(enemigo.getBonus());
                     colisiones.add(crearColision(enemigo.getX(), enemigo.getY()));
                     musica.explocion();
@@ -112,7 +110,6 @@ public class Escena {
                 if (enemigo.getRectangle().intersect(disparo.getRectangle())) {
                     itDisparosJugador.remove();
                     tocado = 1;
-                    System.out.println("colision, atacante muerto -enemigo -disparojugador +colision");
                     estadistica.addBonus(enemigo.getBonus());
                     colisiones.add(crearColision(enemigo.getX(), enemigo.getY()));
                     musica.explocion();
@@ -198,6 +195,26 @@ public class Escena {
                 it.remove();
             }
         }
+    }
+    
+    public void movimientoJugador() {
+        if (teclas.contains(KeyEvent.KEYCODE_D)) { //A
+            getJugador().moverDerecha();
+        }
+
+        if (teclas.contains(KeyEvent.KEYCODE_A)) { //D
+            getJugador().MoverIzquierda();
+        }
+
+        if (teclas.contains(KeyEvent.KEYCODE_W)) { // W
+            jugadorDispara();
+        }
+
+
+        if (teclas.contains(KeyEvent.KEYCODE_ESCAPE) || teclas.contains(KeyEvent.KEYCODE_BACK)) { // W
+            parent.getParentView().finalizarEscena();
+        }
+
     }
 
     public Jugador getJugador() {
@@ -286,21 +303,7 @@ public class Escena {
         this.teclas = teclas;
     }
 
-    public void movimientoJugador() {
-        if (teclas.contains(KeyEvent.KEYCODE_D)) { //A
-            getJugador().moverDerecha();
-        }
+  
 
-        if (teclas.contains(KeyEvent.KEYCODE_A)) { //D
-            getJugador().MoverIzquierda();
-        }
-
-        if (teclas.contains(KeyEvent.KEYCODE_W)) { // W
-            jugadorDispara();
-        }
-
-        if (teclas.contains(KeyEvent.KEYCODE_ESCAPE) || teclas.contains(KeyEvent.KEYCODE_BACK)) { // W
-            parent.getParentView().finalizarEscena();
-        }
-    }
+    
 }

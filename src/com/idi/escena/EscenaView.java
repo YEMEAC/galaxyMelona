@@ -17,8 +17,6 @@ import com.idi.Entity.Constantes;
 import com.idi.Entity.Disparo;
 import com.idi.Entity.Escena;
 import com.idi.Formaciones.Formacion;
-import com.idi.Thread.ThreadAtacantes;
-import com.idi.Thread.ThreadDisparo;
 import com.idi.Thread.ThreadEscenaView;
 import com.idi.galaxiamelona.EscenaActivity;
 import java.util.ArrayList;
@@ -29,13 +27,10 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-public class EscenaView extends SurfaceView implements SurfaceHolder.Callback, OnKeyListener {
+public class EscenaView extends SurfaceView implements SurfaceHolder.Callback {
 
     private EscenaActivity parentView;
     private ThreadEscenaView paintThread;
-    private ThreadAtacantes threadAtacantes;
-    // private AdministradorControles administradorControles
-    // private ThreadAtacantes colisionThread;
 
     private Escena escena;
     private int origenX = 0;
@@ -48,6 +43,7 @@ public class EscenaView extends SurfaceView implements SurfaceHolder.Callback, O
     private Date inicioGameOver;
 
     private AssetManager asset;
+    private static int pausar;
 
     public EscenaView(Context context, AssetManager asset, EscenaActivity a) {
         super(context);
@@ -56,6 +52,7 @@ public class EscenaView extends SurfaceView implements SurfaceHolder.Callback, O
         getHolder().addCallback(this);
         this.asset = asset;
         escena = new Escena(1, context, asset, this);
+        pausar = 0;
 
     }
 
@@ -85,87 +82,6 @@ public class EscenaView extends SurfaceView implements SurfaceHolder.Callback, O
     }
 
     @Override
-    public boolean onKey(View v, int keyCode, KeyEvent event) {
-        return true;
-        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public boolean onKeyUp(int keyCode, KeyEvent event) {
-        escena.getTeclas().remove(keyCode);
-        return true;
-    }
-
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        super.onKeyDown(keyCode, event);
-        escena.getTeclas().add(keyCode);
-        return true;
-    }
-
-    public void update() {
-        if (!gameOver) {
-            getEscena().movimientoJugador();
-            getEscena().avanzarDisparos();
-            getEscena().colisiones();
-            getEscena().moverFormacion();
-        }
-    }
-
-    public void render(Canvas canvas) {
-        draw(canvas);
-    }
-
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        /*int x = (int) event.getX();
-         int y = (int) event.getY();
-
-         switch (event.getAction()) {
-         case MotionEvent.ACTION_DOWN:
-         // hemos pulsado
-         origenY = 0;
-         origenX = 0;
-         if (escena.getJugador().clicado(x, y)) {
-         jugadorSelecionado = 1;
-         origenX = x;
-         origenY = y;
-         System.out.println("clickado");
-         }
-         arrastro = 0;
-         click = 1;
-         break;
-         case MotionEvent.ACTION_MOVE:
-         if (jugadorSelecionado == 1) {
-         escena.getJugador().move(x - origenX, y - origenY, getWidth(),
-         getHeight());
-         System.out.println("muevete conyo " + origenX + " " + origenY);
-
-         origenY = y;
-         origenX = x;
-         }
-
-         arrastro = 1;
-         click = 0;
-         // jugadorSelecionado = 0;
-         break;
-         case MotionEvent.ACTION_UP:
-         if (click == 1 && arrastro == 0) {
-         System.out.println("disparo");
-         escena.jugadorDispara();
-         }
-         jugadorSelecionado = 0;
-         arrastro = 0;
-         click = 0;
-         origenY = 0;
-         origenX = 0;
-         break;
-         }
-         */
-        return true;
-    }
-
-    @Override
     public void draw(Canvas canvas) {
         Paint paint = new Paint();
 
@@ -175,10 +91,88 @@ public class EscenaView extends SurfaceView implements SurfaceHolder.Callback, O
             pintaEnemigos(paint, canvas);
             pintaDisparos(paint, canvas);
             pintaJugador(paint, canvas);
+            accionesPausar();
             escena.comprobarFinDeJugador();
         } else {
             pintaFinPartida();
         }
+    }
+
+    private void accionesPausar() {
+        if (escena.getTeclas().contains(KeyEvent.KEYCODE_P)) {
+            if (pausar == 2) {
+                pausar = 0;
+            } else if (pausar == 0) { //presionado estado 1
+                pausar = 1; //priosionado y soltamos la tecla
+            }
+        } else if (pausar == 1) { //volvemos a presionar para reiniciar
+            pausar = 2;
+        }
+    }
+
+    public void update() {
+        if (!gameOver && pausar == 0) {
+            getEscena().movimientoJugador();
+            getEscena().avanzarDisparos();
+            getEscena().colisiones();
+            getEscena().moverFormacion();
+
+            if (!this.isFocusable()) {
+                setFocusable(true);
+            }
+        }
+    }
+
+    public void render(Canvas canvas) {
+        draw(canvas);
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        int x = (int) event.getX();
+        int y = (int) event.getY();
+
+        if (pausar == 0) {
+            switch (event.getAction()) {
+                case MotionEvent.ACTION_DOWN:
+                    // hemos pulsado
+                    origenX = 0;
+                    if (escena.getJugador().getRectangle().contains(x, y)) {
+                        jugadorSelecionado = 1;
+                        origenX = x;
+                        System.out.println("clickado");
+                    }
+                    arrastro = 0;
+                    click = 1;
+                    break;
+                case MotionEvent.ACTION_MOVE:
+                    if (jugadorSelecionado == 1) {
+                        if ((x - origenX) + 10 <= 0) {
+                            int aux = Constantes.ANCHO_PANTALLA - escena.getJugador().getImagen().getWidth();
+                            escena.getJugador().move(aux, getWidth(), getHeight());
+                        } else if ((x - origenX) + escena.getJugador().getImagen().getWidth() - 10 >= Constantes.ANCHO_PANTALLA) {
+                            escena.getJugador().move(0, getWidth(), getHeight());
+                        } else {
+                            escena.getJugador().move(x - origenX, getWidth(), getHeight());
+                        }
+                        origenX = x;
+                    }
+                    arrastro = 1;
+                    click = 0;
+                    break;
+                case MotionEvent.ACTION_UP:
+                    if (click == 1 && arrastro == 0) {
+                        escena.jugadorDispara();
+                    }
+                    jugadorSelecionado = 0;
+                    arrastro = 0;
+                    click = 0;
+                    origenX = 0;
+                    break;
+            }
+        }
+
+        return true;
     }
 
     private void pintaPaneles(Canvas canvas) {
@@ -334,14 +328,6 @@ public class EscenaView extends SurfaceView implements SurfaceHolder.Callback, O
         this.parentView = parentView;
     }
 
-    public ThreadAtacantes getThreadAtacantes() {
-        return threadAtacantes;
-    }
-
-    public void setThreadAtacantes(ThreadAtacantes threadAtacantes) {
-        this.threadAtacantes = threadAtacantes;
-    }
-
     public int getJugadorSelecionado() {
         return jugadorSelecionado;
     }
@@ -380,6 +366,18 @@ public class EscenaView extends SurfaceView implements SurfaceHolder.Callback, O
 
     public void setInicioGameOver(Date inicioGameOver) {
         this.inicioGameOver = inicioGameOver;
+    }
+
+    public int getPausar() {
+        return pausar;
+    }
+
+    public void setPausar(int pausar) {
+        this.pausar = pausar;
+    }
+
+    public static void setPausarStatic(int i) {
+        pausar = i;
     }
 
 }

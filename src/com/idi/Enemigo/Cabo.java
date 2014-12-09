@@ -1,14 +1,8 @@
 package com.idi.Enemigo;
 
-import android.content.res.AssetManager;
-import android.graphics.Bitmap;
-import android.graphics.Color;
-import android.graphics.Rect;
-import android.graphics.RectF;
-import com.idi.Entity.TexturasManager;
 
+import com.idi.Entity.TexturasManager;
 import com.idi.Entity.Constantes;
-import com.idi.Entity.Disparo;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -94,7 +88,6 @@ public class Cabo extends Enemigo {
         float px = x + (imagen1.getWidth() / 2);
         float py = y + Constantes.VELOCIDAD_DISPARO_ENEMIGO;
         DisparoEnemigo d = new DisparoEnemigo(px, py, TexturasManager.getTextura(Constantes.TEXTURAS_TEXTURA_DISPARO_ENEMIGO_CABO));
-        contadorDisparos++;
         return d;
     }
 

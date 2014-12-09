@@ -1,122 +1,113 @@
-/**
- *
- */
 package com.idi.Thread;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.util.Log;
 import android.view.SurfaceHolder;
 import com.idi.Entity.Constantes;
 import com.idi.Entity.TexturasManager;
 import com.idi.escena.EscenaView;
 
 /**
- * @author impaler
+ * @author Yeison Melo
  *
- * The Main thread which contains the game loop. The thread must have access to
- * the surface view and holder to trigger events every game tick.
  */
 public class ThreadEscenaView extends Thread {
 
-    private static final String TAG = ThreadEscenaView.class.getSimpleName();
-
-    // desired fps
+    // fps deseados
     private final static int MAX_FPS = 70;
-    // maximum number of frames to be skipped
+    // numero maximo de frames que nos podemos saltar
     private final static int MAX_FRAME_SKIPS = 5;
-    // the frame period
+    // periodo/tiempo de 1 frame
     private final static int FRAME_PERIOD = 1000 / MAX_FPS;
 
-    // Surface holder that can access the physical surface
+    // surface
     private SurfaceHolder surfaceHolder;
-    // The actual view that handles inputs
-    // and draws to the surface
-    private EscenaView gamePanel;
+    // vista que captura inputs y dibuja en el surface
+    private EscenaView escenaView;
 
-    // flag to hold game state 
+    // flag de iniciado
     private boolean running;
-    
+
     Canvas canvas;
 
     public void setRunning(boolean running) {
         this.running = running;
     }
 
-    public ThreadEscenaView(SurfaceHolder surfaceHolder, EscenaView gamePanel) {
+    public void pausar() {
+
+    }
+
+    public ThreadEscenaView(SurfaceHolder surfaceHolder, EscenaView escenaView) {
         super();
         this.surfaceHolder = surfaceHolder;
-        this.gamePanel = gamePanel;
+        this.escenaView = escenaView;
     }
 
     @Override
     public void run() {
-        
-        Log.d(TAG, "Starting game loop");
 
-        long beginTime;		// the time when the cycle begun
-        long timeDiff;		// the time it took for the cycle to execute
-        int sleepTime;		// ms to sleep (<0 if we're behind)
-        int framesSkipped;	// number of frames being skipped 
+        long tiempoInicio;		// tiempo de inicio
+        long tiempoDiferencia;		// tiempo que tarda un ciclo en ejecutare
+        int tiempoSleep;		// ms para poner a domir (<0 estamos por detras)
+        int framesSaltados;	// numero de frames que se estan saltandod 
 
-        sleepTime = 0;
+        tiempoSleep = 0;
 
         Paint paint = new Paint();
         paint.setStyle(Paint.Style.FILL);
         Bitmap a = TexturasManager.loadBitmap(Constantes.PATH_FONDO);
-        int velocidadScrollFondo = 20;
-        int yScrollFondo = 0;
         while (running) {
             canvas = null;
-			// try locking the canvas for exclusive pixel editing
-            // in the surface
 
             try {
                 canvas = this.surfaceHolder.lockCanvas();
-                canvas.drawBitmap(a, 0, yScrollFondo, paint);
-                //yScrollFondo -= velocidadScrollFondo;
-                if (yScrollFondo <= -Constantes.LARGO_PANTALLA) {
-                    yScrollFondo = 0;
+                if (canvas != null && a != null) {
+                    canvas.drawBitmap(a, 0, 0, paint);
                 }
 
                 synchronized (surfaceHolder) {
-                    beginTime = System.currentTimeMillis();
-                    framesSkipped = 0;	// resetting the frames skipped
-                    // update game state 
-                    this.gamePanel.update();
-                    // render state to the screen
-                    // draws the canvas on the panel
-                    this.gamePanel.render(canvas);
+                    tiempoInicio = System.currentTimeMillis();
+                    framesSaltados = 0;	// resetear frames saltados
+                    // actualizar estado del juego
+                    if (canvas != null && escenaView != null) //por alguna razon cuando se va al bacground  y vuevel el canvas se queda a null
+                    {
+                        this.escenaView.update();
+                    }
+                    // dibujar el estado en el canvas
+                    if (canvas != null && escenaView != null) {
+                        this.escenaView.render(canvas);
+                    }
                     // calculate how long did the cycle take
-                    timeDiff = System.currentTimeMillis() - beginTime;
+                    tiempoDiferencia = System.currentTimeMillis() - tiempoInicio;
                     // calculate sleep time
-                    sleepTime = (int) (FRAME_PERIOD - timeDiff);
+                    tiempoSleep = (int) (FRAME_PERIOD - tiempoDiferencia);
 
-                    if (sleepTime > 0) {
-                        // if sleepTime > 0 we're OK
+                    if (tiempoSleep > 0) {
+                        // si tiempoSleep > 0  bien
                         try {
-                            // send the thread to sleep for a short period
-                            // very useful for battery saving
-                            Thread.sleep(sleepTime);
+                            // mandamos el thread a dormir por un perioro cordo
+                            Thread.sleep(tiempoSleep);
                         } catch (InterruptedException e) {
                         }
                     }
 
-                    while (sleepTime < 0 && framesSkipped < MAX_FRAME_SKIPS) {
-                        // we need to catch up
-                        this.gamePanel.update(); // update without rendering
-                        sleepTime += FRAME_PERIOD;	// add frame period to check if in next frame
-                        framesSkipped++;
+                    while (tiempoSleep < 0 && framesSaltados < MAX_FRAME_SKIPS) {
+                        // necesitamos capturarlo
+                        if (canvas != null && escenaView != null) {
+                            this.escenaView.update(); // actualiar sin dibujar
+                        }
+                        tiempoSleep += FRAME_PERIOD;	// añadir periodo de frame para ver en el siguiente
+                        framesSaltados++;
                     }
                 }
             } finally {
-                // in case of an exception the surface is not left in 
-                // an inconsistent state
+                //en caso de excepcion no dejamos al surface en un estado inconsistenteS
                 if (canvas != null) {
                     surfaceHolder.unlockCanvasAndPost(canvas);
                 }
-            }	// end finally
+            }	// fin
         }
     }
 

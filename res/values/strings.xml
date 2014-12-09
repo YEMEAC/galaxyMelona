@@ -4,7 +4,7 @@
     <!-- MAIN MENU -->
     <string name="nombreaplicacion">GalaxiaMelona</string>
      <string name="app_name">GalaxiaMelona</string>
-    <string name="opciones">Opciones</string>
+    <string name="instrucciones">Instrucciones</string>
     <string name="jugar">Jugar</string>
     <string name="salir">Salir</string>
     <string name="enemigo">Enemigo</string>
@@ -12,7 +12,6 @@
     <string name="puntuacion">Puntuacion</string>
     <string name="gameover">GameOver</string>
     <string name="nombreaplicacionEscena">GalaxiaMelonaEscena</string>
-    <string name="hello_world">Hello world!</string>
     <string name="desc">Elemento</string>
 
 </resources>

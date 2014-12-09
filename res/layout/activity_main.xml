@@ -21,8 +21,8 @@
          android:id="@+id/boton_jugar"
          android:layout_width="wrap_content"
          android:layout_height="wrap_content"
-         android:layout_above="@+id/boton_opciones"
-         android:layout_alignLeft="@+id/boton_opciones"
+         android:layout_above="@+id/boton_instrucciones"
+         android:layout_alignLeft="@+id/boton_instrucciones"
          android:layout_marginBottom="23dp"
          android:background="@drawable/boton"
          android:gravity="center_vertical|center_horizontal"
@@ -30,14 +30,14 @@
          android:textAppearance="?android:attr/textAppearanceLarge" />
      
      <TextView
-         android:id="@+id/boton_opciones"
+         android:id="@+id/boton_instrucciones"
          android:layout_width="wrap_content"
          android:layout_height="wrap_content"
-         android:layout_alignLeft="@+id/boton_salir"
+         android:layout_alignLeft="@+id/boton_instrucciones"
          android:layout_centerVertical="true"
          android:background="@drawable/boton"
          android:gravity="center_vertical|center_horizontal"
-         android:text="@string/opciones"
+         android:text="@string/instrucciones"
          android:textAppearance="?android:attr/textAppearanceLarge" />
 
      <TextView

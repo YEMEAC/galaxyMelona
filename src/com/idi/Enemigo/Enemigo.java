@@ -25,7 +25,6 @@ import java.util.Date;
 public abstract class Enemigo extends Nave {
 
     EnemigoTipo tipo;
-    int contadorDisparos;
     long bonus;
     boolean ultimaImagenUtilizada;
     //ambas imagenes tiene las mismas dimensiones
@@ -36,7 +35,6 @@ public abstract class Enemigo extends Nave {
     // enemigas basicas
     public Enemigo(float x, float y, int v, Bitmap a, Bitmap b) {
         super(x, y, v);
-        contadorDisparos = 0;
         imagen1 = a; 
         imagen2 = b;
         ultimaImagenUtilizada = true;
@@ -108,13 +106,4 @@ public abstract class Enemigo extends Nave {
     public void setImagen2(Bitmap imagen) {
         this.imagen2 = imagen;
     }
-
-    public int getContadorDisparos() {
-        return contadorDisparos;
-    }
-
-    public void setContadorDisparos(int contadorDisparos) {
-        this.contadorDisparos = contadorDisparos;
-    }
-
 }

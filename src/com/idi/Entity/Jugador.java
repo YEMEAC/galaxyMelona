@@ -30,11 +30,7 @@ public class Jugador extends Nave {
         this.imagen = imagen;
     }
 
-    public void move(int xx, int yy, int w, int h) {
-
-        if (this.y + yy + Constantes.TAMANO_LADO_NAVE_JUGADOR <= h && this.y + yy > 0) {
-            this.y += yy;
-        }
+    public void move(int xx, int w, int h) {
         if (this.x + xx + Constantes.TAMANO_LADO_NAVE_JUGADOR <= w
                 && this.x + xx > 0) {
             this.x += xx;

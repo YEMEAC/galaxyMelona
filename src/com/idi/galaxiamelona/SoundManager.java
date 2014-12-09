@@ -8,7 +8,7 @@ import java.util.ArrayList;
 
 public class SoundManager {
 
-    MediaPlayer principalAmbiente;
+    private static MediaPlayer principalAmbiente;
     private static ArrayList<MediaPlayer> disparoJugador;
     private static ArrayList<MediaPlayer> disparoEnemigo;
     private static ArrayList<MediaPlayer> explosion;
@@ -37,17 +37,16 @@ public class SoundManager {
             principalAmbiente.stop();
     }
 
-    public void pausarAmbiente() {
-        principalAmbiente.pause();
+    public static void pausarAmbiente() {
+        if(principalAmbiente!=null && principalAmbiente.isPlaying())
+            principalAmbiente.pause();
+    }
+    
+    public static void reiniciarAmbiente(){
+         if(principalAmbiente!=null && !principalAmbiente.isPlaying())
+            principalAmbiente.start();
     }
 
-    public void detenerAmbiente() {
-        principalAmbiente.stop();
-    }
-
-    public void iniciarAmbiente() {
-        principalAmbiente.start();
-    }
 
     public static void explocion() {
         if (explosion == null) {
