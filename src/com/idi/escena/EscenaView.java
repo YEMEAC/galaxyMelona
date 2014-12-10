@@ -147,14 +147,7 @@ public class EscenaView extends SurfaceView implements SurfaceHolder.Callback {
                     break;
                 case MotionEvent.ACTION_MOVE:
                     if (jugadorSelecionado == 1) {
-                        if ((x - origenX) + 10 <= 0) {
-                            int aux = Constantes.ANCHO_PANTALLA - escena.getJugador().getImagen().getWidth();
-                            escena.getJugador().move(aux, getWidth(), getHeight());
-                        } else if ((x - origenX) + escena.getJugador().getImagen().getWidth() - 10 >= Constantes.ANCHO_PANTALLA) {
-                            escena.getJugador().move(0, getWidth(), getHeight());
-                        } else {
-                            escena.getJugador().move(x - origenX, getWidth(), getHeight());
-                        }
+                        escena.getJugador().moverArrastrando(x - origenX);
                         origenX = x;
                     }
                     arrastro = 1;

@@ -30,12 +30,37 @@ public class Jugador extends Nave {
         this.imagen = imagen;
     }
 
-    public void move(int xx, int w, int h) {
-        if (this.x + xx + Constantes.TAMANO_LADO_NAVE_JUGADOR <= w
-                && this.x + xx > 0) {
-            this.x += xx;
+    /*hay que tener en cuenta que la posicion que se guardo es el punto x,y
+    lado izquierdo superior de la punta del cuadrado por lo tanto
+    si vamos por  la derecha hay que sumar el witdh de la imagen porque el punto
+    x,y sera el ultimo que saldra del marco en cambio por la izquierda (<0) sera
+    el primero
+    */
+    public void moverArrastrando(int xx) {
+        if (x + xx + imagen.getWidth() > Constantes.ANCHO_PANTALLA)
+            x=0;
+        else if (x + xx < 0)     
+            x=Constantes.ANCHO_PANTALLA-imagen.getWidth();
+        else
+            x += xx;
+    }
+    
+    /*el -10 + 10 es para que deje que la nave se acerque tocalmente al borde
+    sino saltaria antes de tocarlo por la velocidad*/
+    public void moverDerecha() {
+        if ((x + imagen.getWidth() - 10) + velocidad >= Constantes.ANCHO_PANTALLA) {
+            x = 0;
+        } else {
+            x = x + velocidad;
         }
+    }
 
+    public void MoverIzquierda() {
+        if (x - velocidad + 10 <= 0) {
+            x = Constantes.ANCHO_PANTALLA - imagen.getWidth();
+        } else {
+            x = x - velocidad;
+        }
     }
 
     @Override
@@ -81,22 +106,7 @@ public class Jugador extends Nave {
             this.vidas -= 1;
     }
 
-    public void moverDerecha() {
-        if ((x + imagen.getWidth() - 10) + velocidad >= Constantes.ANCHO_PANTALLA) {
-            x = 0;
-        } else {
-            x = x + velocidad;
-        }
-
-    }
-
-    public void MoverIzquierda() {
-        if (x - velocidad + 10 <= 0) {
-            x = Constantes.ANCHO_PANTALLA - imagen.getWidth();
-        } else {
-            x = x - velocidad;
-        }
-    }
+    
 
     public Bitmap getImagen() {
         return imagen;

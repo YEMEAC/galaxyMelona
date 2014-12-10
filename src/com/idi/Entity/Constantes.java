@@ -59,9 +59,9 @@ public final class Constantes {
      public static int FOTOGRAMAS_COLISION = 4;
 
     //SONIDO
-    public static int TAMAÑO_BUFFER_SONIDO_DISPAROS = 2;
-    public static int TAMAÑO_BUFFER_SONIDO_EXPLOCINES = 2;
-    public static int TAMAÑO_BUFFER_SONIDO_ENEMIGO = 3;
+    public static int TAMANO_BUFFER_SONIDO_DISPAROS = 2;
+    public static int TAMANO_BUFFER_SONIDO_EXPLOCINES = 2;
+    public static int TAMANO_BUFFER_SONIDO_ENEMIGO = 3;
 
     //STRINGS PARA LOCALIZAR UNA TEXTURA EN EL TEXTURASMANAGER
     public static String TEXTURAS_TEXTURA_JUGADOR = "jugador";

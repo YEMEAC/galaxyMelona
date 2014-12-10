@@ -99,7 +99,7 @@ public class SoundManager {
             try {
                 explosion = new ArrayList<MediaPlayer>();
                 contenedor = asset.openFd(Constantes.PATH_SONIDO_EXPLOCION_1);
-                for (int i = 0; i < Constantes.TAMAÑO_BUFFER_SONIDO_EXPLOCINES; ++i) {
+                for (int i = 0; i < Constantes.TAMANO_BUFFER_SONIDO_EXPLOCINES; ++i) {
                     explosion.add(new MediaPlayer());
                     explosion.get(i).setDataSource(contenedor.getFileDescriptor(), contenedor.getStartOffset(), contenedor.getLength());
                     explosion.get(i).prepare();
@@ -116,7 +116,7 @@ public class SoundManager {
             try {
                 disparoEnemigo = new ArrayList<MediaPlayer>();
                 contenedor = asset.openFd(Constantes.PATH_SONIDO_DISPARO_ENEMIGO);
-                for (int i = 0; i < Constantes.TAMAÑO_BUFFER_SONIDO_ENEMIGO; ++i) {
+                for (int i = 0; i < Constantes.TAMANO_BUFFER_SONIDO_ENEMIGO; ++i) {
                     disparoEnemigo.add(new MediaPlayer());
                     disparoEnemigo.get(i).setDataSource(contenedor.getFileDescriptor(), contenedor.getStartOffset(), contenedor.getLength());
                     disparoEnemigo.get(i).prepare();
@@ -133,7 +133,7 @@ public class SoundManager {
             try {
                 disparoJugador = new ArrayList<MediaPlayer>();
                 contenedor = asset.openFd(Constantes.PATH_SONIDO_DISPARO_JUGADOR);
-                for (int i = 0; i < Constantes.TAMAÑO_BUFFER_SONIDO_DISPAROS; ++i) {
+                for (int i = 0; i < Constantes.TAMANO_BUFFER_SONIDO_DISPAROS; ++i) {
                     disparoJugador.add(new MediaPlayer());
                     disparoJugador.get(i).setDataSource(contenedor.getFileDescriptor(), contenedor.getStartOffset(), contenedor.getLength());
                     disparoJugador.get(i).prepare();

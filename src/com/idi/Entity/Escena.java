@@ -26,8 +26,13 @@ public class Escena {
     private EscenaView parent;
     private Estadistica estadistica;
     private Jugador jugador;
-    private Formacion formacion;
     private Set<Integer> teclas;
+    
+    
+    private Formacion formacion;
+    private ArrayList<Formacion> formaciones;
+    private int contFormaciones;
+    
 
     private ArrayList<DisparoJugador> disparosJugador = new ArrayList<DisparoJugador>();
     private ArrayList<DisparoEnemigo> disparosEnemigos = new ArrayList<DisparoEnemigo>();
@@ -56,9 +61,12 @@ public class Escena {
         jugador = new Jugador(Constantes.POSICION_INICIAL_JUGADOR_X, Constantes.POSICION_INICIAL_JUGADOR_Y,
                 Constantes.VIDAS_JUGADOR, texturasManager.getTextura(Constantes.TEXTURAS_TEXTURA_JUGADOR));
 
-        if (nivel == 1) {
-            formacion = new A(jugador);
-        }
+        
+        contFormaciones=0;
+        formaciones = new ArrayList<Formacion>();
+        formaciones.add(new A(jugador));
+        formacion=formaciones.get(contFormaciones);
+       
     }
 
     public void colisiones() {
