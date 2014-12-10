@@ -16,7 +16,7 @@ import java.util.Iterator;
 public class A extends Formacion {
 
     //esto abra que cambiar par que sea una rraylist de texturas enfuncion deltipo de nave
-    public A(Jugador jugador) {
+    public A(Jugador jugador, int a) {
         super(jugador);
         int x = 24;
         int y = 20;
@@ -24,7 +24,17 @@ public class A extends Formacion {
         int columas = 7;
         //formacion cuadrada
 
-        construirFormacion(rombo(), filas, columas);
+        if (a == 0) {
+            construirFormacion(cuadrada(), filas, columas);
+        } else if (a == 1) {
+            construirFormacion(estrella(), filas, columas);
+        } else if (a == 2) {
+            construirFormacion(rombo(), filas, columas);
+        } else if (a == 3) {
+            construirFormacion(circular(), filas, columas);
+        } else {
+            construirFormacion(aleatorio(), filas, columas);
+        }
         OrdenAtacantes();
 
     }
@@ -100,7 +110,7 @@ public class A extends Formacion {
         return coordenadasIniciales;
     }
 
-    private ArrayList<Integer> quadrada() {
+    private ArrayList<Integer> cuadrada() {
         int filas = 4;
         int columas = 7;
         ArrayList<Integer> coordenadasIniciales = new ArrayList<Integer>();
@@ -114,19 +124,19 @@ public class A extends Formacion {
     }
 
     private ArrayList<Integer> rombo() {
-         ArrayList<Integer> coordenadasIniciales = new ArrayList<Integer>();
-         int n=8;
+        ArrayList<Integer> coordenadasIniciales = new ArrayList<Integer>();
+        int n = 8;
         for (int i = 1; i <= n; i++) {
             for (int j = 1; j <= i; j++) {
                 coordenadasIniciales.add(j);
                 coordenadasIniciales.add(i);
             }
             /*for (int k = 1; k < i; k++) {
-                coordenadasIniciales.add(k);
-                coordenadasIniciales.add(i);
-            }*/
+             coordenadasIniciales.add(k);
+             coordenadasIniciales.add(i);
+             }*/
         }
-       
+
         return coordenadasIniciales;
     }
 

@@ -27,12 +27,11 @@ public class Escena {
     private Estadistica estadistica;
     private Jugador jugador;
     private Set<Integer> teclas;
-    
-    
+
     private Formacion formacion;
     private ArrayList<Formacion> formaciones;
-    private int contFormaciones;
-    
+    private int idFormacionActual;
+    private Escudo escudo;
 
     private ArrayList<DisparoJugador> disparosJugador = new ArrayList<DisparoJugador>();
     private ArrayList<DisparoEnemigo> disparosEnemigos = new ArrayList<DisparoEnemigo>();
@@ -61,12 +60,18 @@ public class Escena {
         jugador = new Jugador(Constantes.POSICION_INICIAL_JUGADOR_X, Constantes.POSICION_INICIAL_JUGADOR_Y,
                 Constantes.VIDAS_JUGADOR, texturasManager.getTextura(Constantes.TEXTURAS_TEXTURA_JUGADOR));
 
-        
-        contFormaciones=0;
+        escudo = new Escudo();
+
+        idFormacionActual = 0;
         formaciones = new ArrayList<Formacion>();
-        formaciones.add(new A(jugador));
-        formacion=formaciones.get(contFormaciones);
-       
+        formaciones.add(new A(jugador, 0));
+        //formaciones.add(new A(jugador, 1));
+        //formaciones.add(new A(jugador,2));
+        //formaciones.add(new A(jugador,3));
+        //formaciones.add(new A(jugador,4));
+        formacion = formaciones.get(idFormacionActual);
+        idFormacionActual++;
+
     }
 
     public void colisiones() {
@@ -75,7 +80,14 @@ public class Escena {
     }
 
     public void comprobarFinDeJugador() {
-        if ((jugador.getVidas() < 1 || (formacion.getAtacantes().isEmpty() && formacion.getEnemigos().isEmpty()))
+
+        if (formacion.getAtacantes().isEmpty() && formacion.getEnemigos().isEmpty() && idFormacionActual < formaciones.size()) {
+            formacion = formaciones.get(idFormacionActual);
+            idFormacionActual++;
+            jugador.aumentarVidas();
+        }
+
+        if ((jugador.getVidas() < 1 || (formacion.getAtacantes().isEmpty() && formacion.getEnemigos().isEmpty() && idFormacionActual >= formaciones.size()))
                 && colisiones.isEmpty()) { // colisiones empty para que deje reproducir la explocion final del jugador
             //si pongo mas formaciones hay que poner otro flag de no quedan formaciones
             estadistica.actualizarGuardarPuntucion(parent.getContext());
@@ -144,7 +156,9 @@ public class Escena {
         while (it.hasNext() && tocado == 0) {
             disparo = it.next();
             if (jugador.getRectangle().intersect(disparo.getRectangle())) {
-                jugador.tocado();
+                if (escudo.getInicioActivacion() == null) {
+                    jugador.tocado();
+                }
                 tocado = 1;
                 it.remove();
                 colisiones.add(crearColision(disparo.getX(), disparo.getY()));
@@ -157,7 +171,9 @@ public class Escena {
         while (it2.hasNext() && tocado == 0) {
             atacante = it2.next();
             if (jugador.getRectangle().intersect(atacante.getRectangle())) {
-                jugador.tocado();
+                if (escudo.getInicioActivacion() == null) {
+                    jugador.tocado();
+                }
                 tocado = 1;
                 it2.remove();
                 colisiones.add(crearColision(atacante.getX(), atacante.getY()));
@@ -204,7 +220,7 @@ public class Escena {
             }
         }
     }
-    
+
     public void movimientoJugador() {
         if (teclas.contains(KeyEvent.KEYCODE_D)) { //A
             getJugador().moverDerecha();
@@ -218,11 +234,12 @@ public class Escena {
             jugadorDispara();
         }
 
+    }
 
+    public void salirTecla() {
         if (teclas.contains(KeyEvent.KEYCODE_ESCAPE) || teclas.contains(KeyEvent.KEYCODE_BACK)) { // W
             parent.getParentView().finalizarEscena();
         }
-
     }
 
     public Jugador getJugador() {
@@ -311,7 +328,44 @@ public class Escena {
         this.teclas = teclas;
     }
 
-  
+    public EscenaView getParent() {
+        return parent;
+    }
 
-    
+    public void setParent(EscenaView parent) {
+        this.parent = parent;
+    }
+
+    public ArrayList<Formacion> getFormaciones() {
+        return formaciones;
+    }
+
+    public void setFormaciones(ArrayList<Formacion> formaciones) {
+        this.formaciones = formaciones;
+    }
+
+    public int getContFormaciones() {
+        return idFormacionActual;
+    }
+
+    public void setContFormaciones(int contFormaciones) {
+        this.idFormacionActual = contFormaciones;
+    }
+
+    public Escudo getEscudo() {
+        return escudo;
+    }
+
+    public void setEscudo(Escudo escudo) {
+        this.escudo = escudo;
+    }
+
+    public SoundManager getMusica() {
+        return musica;
+    }
+
+    public void setMusica(SoundManager musica) {
+        this.musica = musica;
+    }
+
 }

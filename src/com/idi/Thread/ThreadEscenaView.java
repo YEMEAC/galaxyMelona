@@ -15,7 +15,7 @@ import com.idi.escena.EscenaView;
 public class ThreadEscenaView extends Thread {
 
     // fps deseados
-    private final static int MAX_FPS = 70;
+    private final static int MAX_FPS = 48;
     // numero maximo de frames que nos podemos saltar
     private final static int MAX_FRAME_SKIPS = 5;
     // periodo/tiempo de 1 frame

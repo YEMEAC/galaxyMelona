@@ -34,8 +34,12 @@ public class TexturasManager {
         anadirTextura(Constantes.TEXTURAS_TEXTURA_JUGADOR, aux);     
         aux = getBitmapScalado(Constantes.PATH_SPRITE_DISPARO_JUGADOR, new Rect(0, 0, 11, 29),1);
         anadirTextura(Constantes.TEXTURAS_TEXTURA_DISPAROJUGADOR, aux);
-         aux = getBitmapScalado(Constantes.PATH_SPRITE_JUGADOR_VIDAS, new Rect(0, 0, 25, 26),1);
+        aux = getBitmapScalado(Constantes.PATH_SPRITE_JUGADOR_VIDAS, new Rect(0, 0, 25, 26),1);
         anadirTextura(Constantes.TEXTURAS_TEXTURA_JUGADOR_VIDAS, aux);
+        aux = getBitmapScalado(Constantes.PATH_SPRITE_NAVE_JUGADOR_ESCUDO, new Rect(0, 0, 85, 84),1);
+        anadirTextura(Constantes.TEXTURAS_TEXTURA_JUGADOR_ESCUDO, aux);
+        aux = getBitmapScalado(Constantes.PATH_SPRITE_NAVE_JUGADOR_ESCUDO_OBJETO, new Rect(0, 0, 30, 32),1);
+        anadirTextura(Constantes.TEXTURAS_TEXTURA_JUGADOR_ESCUDO_OBJETO, aux);
         
         
         //CABO

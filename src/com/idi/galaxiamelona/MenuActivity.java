@@ -3,6 +3,7 @@ package com.idi.galaxiamelona;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -10,8 +11,12 @@ import android.view.View.OnClickListener;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.TextView;
+import com.idi.Entity.Constantes;
 
 public class MenuActivity extends Activity {
+
+    boolean flaginstruciones;
+    float  antiguaYinstruciones;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +64,30 @@ public class MenuActivity extends Activity {
             @Override
             public void onClick(View v) {
                 finish();
+            }
+        });
+
+        final TextView instrucciones = (TextView) findViewById(R.id.boton_instrucciones);
+        instrucciones.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                TextView salir = (TextView) findViewById(R.id.boton_salir);
+                TextView jugar = (TextView) findViewById(R.id.boton_jugar);
+
+                if (!flaginstruciones) {
+                    salir.setVisibility(View.INVISIBLE);
+                    jugar.setVisibility(View.INVISIBLE);
+                    antiguaYinstruciones=instrucciones.getY();
+                    instrucciones.setY(1280-(1280/7));
+                    instrucciones.setText("Volver");
+
+                }else{
+                    salir.setVisibility(View.VISIBLE);
+                    jugar.setVisibility(View.VISIBLE);
+                    instrucciones.setY(antiguaYinstruciones);
+                    instrucciones.setText("Intrucciones");
+                }
+                flaginstruciones = !flaginstruciones;
             }
         });
 

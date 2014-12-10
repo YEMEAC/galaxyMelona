@@ -98,7 +98,8 @@ public class Jugador extends Nave {
     }
 
     public void aumentarVidas(){
-        ++vidas;
+        if(vidas<4)
+            ++vidas;
     }
     
     public void tocado() {

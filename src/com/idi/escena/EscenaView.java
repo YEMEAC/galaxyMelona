@@ -112,14 +112,37 @@ public class EscenaView extends SurfaceView implements SurfaceHolder.Callback {
 
     public void update() {
         if (!gameOver && pausar == 0) {
-            getEscena().movimientoJugador();
+            if (jugadorSelecionado == 1) //arrastrando
+            {
+                escena.jugadorDispara();
+            } else {
+                getEscena().movimientoJugador(); //keys
+            }
+
             getEscena().avanzarDisparos();
             getEscena().colisiones();
             getEscena().moverFormacion();
+            comprobarEstadoEscudo();
 
             if (!this.isFocusable()) {
                 setFocusable(true);
             }
+        }
+
+        getEscena().salirTecla();
+    }
+
+    private void comprobarEstadoEscudo () {
+        if (escena.getEscudo().getInicioActivacion() == null && !escena.getEscudo().isCayendo()) {
+            escena.getEscudo().comoprobarSiIniciamosCaida();
+        } else if (escena.getEscudo().isCayendo()) {
+            if (escena.getJugador().getRectangle().contains(escena.getEscudo().getRectangle())) {
+                escena.getEscudo().colisionConElJugador();
+            } else {
+                escena.getEscudo().avanzarEscudo();
+            }
+        } else if (escena.getEscudo().getInicioActivacion() != null) {
+            escena.getEscudo().comprabarSiSeAcabaElEscudo();
         }
     }
 
@@ -140,7 +163,6 @@ public class EscenaView extends SurfaceView implements SurfaceHolder.Callback {
                     if (escena.getJugador().getRectangle().contains(x, y)) {
                         jugadorSelecionado = 1;
                         origenX = x;
-                        System.out.println("clickado");
                     }
                     arrastro = 0;
                     click = 1;
@@ -154,8 +176,10 @@ public class EscenaView extends SurfaceView implements SurfaceHolder.Callback {
                     click = 0;
                     break;
                 case MotionEvent.ACTION_UP:
-                    if (click == 1 && arrastro == 0) {
-                        escena.jugadorDispara();
+                    if (pausar == 2) {
+                        pausar = 0;
+                    } else {
+                        pausar = 2;
                     }
                     jugadorSelecionado = 0;
                     arrastro = 0;
@@ -172,6 +196,9 @@ public class EscenaView extends SurfaceView implements SurfaceHolder.Callback {
         escena.getEstadistica().pintaPuntuacion(canvas);
         escena.getJugador().pintaVidas(canvas);
         escena.getEstadistica().pintaCronometro(canvas);
+        if (escena.getEscudo().getInicioActivacion() == null && escena.getEscudo().isCayendo()) {
+            escena.getEscudo().pintarObjeto(canvas, null);
+        }
     }
 
     private void pintaFinPartida() {
@@ -258,6 +285,9 @@ public class EscenaView extends SurfaceView implements SurfaceHolder.Callback {
 
     private void pintaJugador(Paint paint, Canvas canvas) {
         canvas.drawBitmap(escena.getJugador().getImagen(), escena.getJugador().getX(), escena.getJugador().getY(), paint);
+        if (escena.getEscudo().getInicioActivacion() != null && !escena.getEscudo().isCayendo()) {
+            escena.getEscudo().pintarEscudoAlrededoJugador(canvas, paint, escena.getJugador().getX(), escena.getJugador().getY());
+        }
     }
 
     private void pintaDisparos(Paint paint, Canvas canvas) {
