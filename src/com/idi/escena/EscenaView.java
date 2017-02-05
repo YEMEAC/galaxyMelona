@@ -44,6 +44,8 @@ public class EscenaView extends SurfaceView implements SurfaceHolder.Callback {
 
     private AssetManager asset;
     private static int pausar;
+    private Date ultimoClick;
+    private Date teclap;
 
     public EscenaView(Context context, AssetManager asset, EscenaActivity a) {
         super(context);
@@ -53,7 +55,8 @@ public class EscenaView extends SurfaceView implements SurfaceHolder.Callback {
         this.asset = asset;
         escena = new Escena(1, context, asset, this);
         pausar = 0;
-
+        ultimoClick = (Calendar.getInstance()).getTime();
+        teclap = (Calendar.getInstance()).getTime();
     }
 
     @Override
@@ -99,15 +102,16 @@ public class EscenaView extends SurfaceView implements SurfaceHolder.Callback {
     }
 
     private void accionesPausar() {
+        Date now = (Calendar.getInstance()).getTime();
         if (escena.getTeclas().contains(KeyEvent.KEYCODE_P)) {
-            if (pausar == 2) {
+            if (pausar == 1 && now.getTime()-teclap.getTime()>Constantes.TIEMPO_MAXIMO_TECLA_P) {
                 pausar = 0;
-            } else if (pausar == 0) { //presionado estado 1
+            } else if (pausar == 0 && now.getTime()-teclap.getTime()>Constantes.TIEMPO_MAXIMO_CLICK_PAUSAR) { //presionado estado 1
                 pausar = 1; //priosionado y soltamos la tecla
             }
-        } else if (pausar == 1) { //volvemos a presionar para reiniciar
-            pausar = 2;
+            teclap=now;
         }
+
     }
 
     public void update() {
@@ -132,7 +136,7 @@ public class EscenaView extends SurfaceView implements SurfaceHolder.Callback {
         getEscena().salirTecla();
     }
 
-    private void comprobarEstadoEscudo () {
+    private void comprobarEstadoEscudo() {
         if (escena.getEscudo().getInicioActivacion() == null && !escena.getEscudo().isCayendo()) {
             escena.getEscudo().comoprobarSiIniciamosCaida();
         } else if (escena.getEscudo().isCayendo()) {
@@ -155,9 +159,9 @@ public class EscenaView extends SurfaceView implements SurfaceHolder.Callback {
         int x = (int) event.getX();
         int y = (int) event.getY();
 
-        if (pausar == 0) {
-            switch (event.getAction()) {
-                case MotionEvent.ACTION_DOWN:
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                if (pausar == 0) {
                     // hemos pulsado
                     origenX = 0;
                     if (escena.getJugador().getRectangle().contains(x, y)) {
@@ -165,30 +169,42 @@ public class EscenaView extends SurfaceView implements SurfaceHolder.Callback {
                         origenX = x;
                     }
                     arrastro = 0;
-                    click = 1;
-                    break;
-                case MotionEvent.ACTION_MOVE:
+                }
+                Date now = (Calendar.getInstance()).getTime();
+                if (click == 0) {
+                    ++click;
+                } else if (click == 1 && now.getTime() - ultimoClick.getTime() < Constantes.TIEMPO_MAXIMO_CLICK_PAUSAR) {
+                    ++click;
+                } else {
+                    click = 0;
+                }
+                ultimoClick = now;
+                break;
+            case MotionEvent.ACTION_MOVE:
+                if (pausar == 0) {
                     if (jugadorSelecionado == 1) {
                         escena.getJugador().moverArrastrando(x - origenX);
                         origenX = x;
                     }
                     arrastro = 1;
+                }
+                click = 0;
+                break;
+            case MotionEvent.ACTION_UP:
+                if ((pausar == 1 || pausar == 2) && click == 2) {
+                    pausar = 0;
                     click = 0;
-                    break;
-                case MotionEvent.ACTION_UP:
-                    if (pausar == 2) {
-                        pausar = 0;
-                    } else {
-                        pausar = 2;
-                    }
+                } else if (click == 2 && pausar == 0) {
+                    pausar = 2;
+                    click = 0;
+                }
+                if (pausar == 0) {
                     jugadorSelecionado = 0;
                     arrastro = 0;
-                    click = 0;
                     origenX = 0;
-                    break;
-            }
+                }
+                break;
         }
-
         return true;
     }
 

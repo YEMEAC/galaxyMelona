@@ -13,5 +13,6 @@
     <string name="gameover">GameOver</string>
     <string name="nombreaplicacionEscena">GalaxiaMelonaEscena</string>
     <string name="desc">Elemento</string>
+     <string name="texto">texto</string>
 
 </resources>

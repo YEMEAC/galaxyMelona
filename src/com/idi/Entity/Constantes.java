@@ -19,14 +19,14 @@ public final class Constantes {
     public static final long DELAY_CAPTAR_CORONEL = 2000;
     public static final long DELAY_CAPTAR_TENIENTE = 1500;
     
-    public static float VELOCIDAD_ENEMIGO_CABO_1 = 11;
-    public static float VELOCIDAD_ENEMIGO_CABO_2 = 11;
-    public static float VELOCIDAD_ENEMIGO_SARGENTO_1 = 12;
+    public static float VELOCIDAD_ENEMIGO_CABO_1 = 9;
+    public static float VELOCIDAD_ENEMIGO_CABO_2 = 9;
+    public static float VELOCIDAD_ENEMIGO_SARGENTO_1 = 10;
     
-    public static float VELOCIDAD_ENEMIGO_CORONEL_1 = 13;
-    public static float VELOCIDAD_ENEMIGO_CORONEL_2 = 13;
-    public static float VELOCIDAD_ENEMIGO_TENIENTE_1 = 14;
-    public static float VELOCIDAD_ENEMIGO_TENIENTE_2 = 14;
+    public static float VELOCIDAD_ENEMIGO_CORONEL_1 = 11;
+    public static float VELOCIDAD_ENEMIGO_CORONEL_2 = 11;
+    public static float VELOCIDAD_ENEMIGO_TENIENTE_1 = 12;
+    public static float VELOCIDAD_ENEMIGO_TENIENTE_2 = 12;
     public static int VELOCIDAD_CAIDA_ESCUDO = 20;
     
     
@@ -115,8 +115,10 @@ public final class Constantes {
     
     
     //HELP
-    static long TIEMPO_APARICION_ESCUDO=4000;
-    static long TIEMPO_DURACION_ESCUDO=4000;
+    static long TIEMPO_APARICION_ESCUDO=40000;
+    static long TIEMPO_DURACION_ESCUDO=6000;
+    public static long TIEMPO_MAXIMO_CLICK_PAUSAR=1000;
+    public static long TIEMPO_MAXIMO_TECLA_P=300;
 
 
 }

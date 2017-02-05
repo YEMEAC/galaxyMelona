@@ -32,20 +32,21 @@ public class EscenaActivity extends Activity implements OnKeyListener {
 
     @Override
     public boolean onKey(View v, int keyCode, KeyEvent event) {
+        super.onKeyDown(keyCode, event);
         return true;
         //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
-        // super.onKeyUp(keyCode, event);
+        super.onKeyUp(keyCode, event);
         escenaView.getEscena().getTeclas().remove(keyCode);
         return true;
     }
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        //super.onKeyDown(keyCode, event);
+        super.onKeyDown(keyCode, event);
         escenaView.getEscena().getTeclas().add(keyCode);
         return true;
     }
@@ -64,9 +65,6 @@ public class EscenaActivity extends Activity implements OnKeyListener {
     @Override
     protected void onResume() {
         super.onResume();
-        this.onKey(escenaView, RESULT_OK, null);
-        this.onKeyDown(RESULT_OK, null);
-        this.onKeyUp(RESULT_OK, null);
         EscenaView.setPausarStatic(0);
         SoundManager.reiniciarAmbiente();
     }

@@ -2,8 +2,10 @@ package com.idi.galaxiamelona;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -11,12 +13,13 @@ import android.view.View.OnClickListener;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.TextView;
+
 import com.idi.Entity.Constantes;
 
 public class MenuActivity extends Activity {
 
     boolean flaginstruciones;
-    float  antiguaYinstruciones;
+    float antiguaYinstruciones;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,17 +76,38 @@ public class MenuActivity extends Activity {
             public void onClick(View v) {
                 TextView salir = (TextView) findViewById(R.id.boton_salir);
                 TextView jugar = (TextView) findViewById(R.id.boton_jugar);
+                TextView texto = (TextView) findViewById(R.id.texto);
 
                 if (!flaginstruciones) {
                     salir.setVisibility(View.INVISIBLE);
                     jugar.setVisibility(View.INVISIBLE);
-                    antiguaYinstruciones=instrucciones.getY();
-                    instrucciones.setY(1280-(1280/7));
+                    antiguaYinstruciones = instrucciones.getY();
+                    instrucciones.setY(750);
                     instrucciones.setText("Volver");
+                    texto.setVisibility(View.VISIBLE);
+                    texto.setTextColor(Color.BLACK);
+                    texto.setBackgroundColor(Color.WHITE);
 
-                }else{
+                    texto.setText("TouchScreen:\n"
+                            + "mantener pulsador "
+                            + "sobre la nave del jugador y arrastras para "
+                            + "moverla. Mientras se mueve de esta forma se "
+                            + "dispara automaticamente. Double click en "
+                            + "pantalla para pausar/continuar partida. \n"
+                            + "\nTeclado: \n"
+                            + "teclas A,D,W,P sirven para mover a la "
+                            + "izquierda, mover a la derecha, disparar y "
+                            + "pausar/continuar la partida respectivamente.\n"
+                            + "\nBonus Enemigos \n"
+                            + "Cabo 30pts \n"
+                            + "Sargento 40pts\n"
+                            + "Coronel 50pts\n"
+                            + "Teniente 60pts\n");
+
+                } else {
                     salir.setVisibility(View.VISIBLE);
                     jugar.setVisibility(View.VISIBLE);
+                    texto.setVisibility(View.INVISIBLE);
                     instrucciones.setY(antiguaYinstruciones);
                     instrucciones.setText("Intrucciones");
                 }

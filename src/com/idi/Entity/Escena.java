@@ -65,10 +65,9 @@ public class Escena {
         idFormacionActual = 0;
         formaciones = new ArrayList<Formacion>();
         formaciones.add(new A(jugador, 0));
-        //formaciones.add(new A(jugador, 1));
-        //formaciones.add(new A(jugador,2));
-        //formaciones.add(new A(jugador,3));
-        //formaciones.add(new A(jugador,4));
+        formaciones.add(new A(jugador, 1));
+        formaciones.add(new A(jugador,2));
+        formaciones.add(new A(jugador,3));
         formacion = formaciones.get(idFormacionActual);
         idFormacionActual++;
 

@@ -31,12 +31,31 @@ public class A extends Formacion {
         } else if (a == 2) {
             construirFormacion(rombo(), filas, columas);
         } else if (a == 3) {
-            construirFormacion(circular(), filas, columas);
+            construirFormacion(diamante(), filas, columas);
+        }else if (a==4){
+        	construirFormacion(triangulo(), filas, columas);
         } else {
             construirFormacion(aleatorio(), filas, columas);
         }
         OrdenAtacantes();
 
+    }
+    
+    private ArrayList<Integer> triangulo() {
+        ArrayList<Integer> coordenadasIniciales = new ArrayList<Integer>();
+        int n=8;
+        for(int i=0;i<n;i++)
+        {
+        	
+        		for(int k=0;k<2*i-1;k++)
+        			{
+        			 coordenadasIniciales.add(i);
+                     coordenadasIniciales.add(k);
+                                   // star
+        				}
+
+        	}
+        return coordenadasIniciales;
     }
 
     private ArrayList<Integer> aleatorio() {
@@ -60,16 +79,14 @@ public class A extends Formacion {
 
     private ArrayList<Integer> diamante() {
         ArrayList<Integer> coordenadasIniciales = new ArrayList<Integer>();
-        for (int i = 0; i < 10; i++) {
-            if (i == 0) {
-                coordenadasIniciales.add(0);
-                coordenadasIniciales.add(4);
-                continue;
-            }
-            coordenadasIniciales.add(4 - (i % 5));
-            coordenadasIniciales.add(i);
-            coordenadasIniciales.add(4 + (i % 5));
-            coordenadasIniciales.add(i);
+        int n=8;
+        for(int i=0;i<n;i++)
+        {
+           for(int j=0;j<=i;j++)
+           {
+        	   coordenadasIniciales.add(i);
+               coordenadasIniciales.add(j);
+           }
         }
         return coordenadasIniciales;
     }
@@ -92,23 +109,7 @@ public class A extends Formacion {
         return coordenadasIniciales;
     }
 
-    private ArrayList<Integer> circular() {
-        ArrayList<Integer> coordenadasIniciales = new ArrayList<Integer>();
-        for (int i = 0; i < 10; i += 9) {
-            for (int j = 0; j < 10; j++) {
-                coordenadasIniciales.add(i);
-                coordenadasIniciales.add(j);
-            }
-        }
-
-        for (int i = 1; i < 9; i++) {
-            for (int j = 0; j < 9; j += 9) {
-                coordenadasIniciales.add(i);
-                coordenadasIniciales.add(j);
-            }
-        }
-        return coordenadasIniciales;
-    }
+    
 
     private ArrayList<Integer> cuadrada() {
         int filas = 4;
@@ -125,16 +126,12 @@ public class A extends Formacion {
 
     private ArrayList<Integer> rombo() {
         ArrayList<Integer> coordenadasIniciales = new ArrayList<Integer>();
-        int n = 8;
+        int n = 6;
         for (int i = 1; i <= n; i++) {
             for (int j = 1; j <= i; j++) {
                 coordenadasIniciales.add(j);
                 coordenadasIniciales.add(i);
             }
-            /*for (int k = 1; k < i; k++) {
-             coordenadasIniciales.add(k);
-             coordenadasIniciales.add(i);
-             }*/
         }
 
         return coordenadasIniciales;
@@ -170,14 +167,14 @@ public class A extends Formacion {
             fila = coordenadasIniciales.get(count);
             columna = coordenadasIniciales.get(count + 1);
 
-            if (fila == 0) {
+            if (fila <3) {
                 if (columna % 2 == 0) {
                     enemigos.add(new Teniente((columna * size) + (columna * margen), (fila * size) + (fila * margen) + topBuffer));
                 } else {
                     enemigos.add(new Coronel((columna * size) + (columna * margen), (fila * size) + (fila * margen) + topBuffer));
                 }
                 count += 2;
-            } else if (fila == 1) {
+            } else if (fila <6) {
                 enemigos.add(new Sargento((columna * size) + (columna * margen), (fila * size) + (fila * margen) + topBuffer));
                 count += 2;
             } else {
